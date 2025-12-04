@@ -28,13 +28,11 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         currentRoom,
         currentMonster,
         lootCollected,
-        incursionTimeRemaining,
         startIncursion,
         damageMonster,
         defeatCurrentMonster,
         endIncursion,
-        skipIncursion,
-        setIncursionTimeRemaining
+        skipIncursion
     } = useIncursion();
 
     const [showInfo, setShowInfo] = useState(false);
@@ -52,7 +50,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         }
     };
 
-    // Combate na incursão
+    // Combate na incursão (TURN-BASED)
     const handleAttack = () => {
         if (!currentMonster) {
             console.log('[Attack] No current monster');
@@ -63,8 +61,9 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         const heroAtk = hero.stats?.atk || hero.atk || 10;
         const heroDef = hero.stats?.def || hero.def || 2;
 
-        console.log('[Attack] Current monster:', currentMonster);
-        console.log('[Attack] Hero stats:', { atk: heroAtk, def: heroDef });
+        console.log('═══════════════ TURNO ═══════════════');
+        console.log('[Hero] ATK:', heroAtk, 'DEF:', heroDef, 'HP:', hero.hp);
+        console.log('[Monster]', currentMonster.name, '- HP:', currentMonster.hp, 'ATK:', currentMonster.atk, 'DEF:', currentMonster.def);
 
         // Validar valores antes de calcular
         const monsterDef = Number(currentMonster.def) || 0;
@@ -73,30 +72,33 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         const monsterGold = Number(currentMonster.gold) || 0;
         const monsterXp = Number(currentMonster.xp) || 0;
 
-        // Calcular dano do herói
+        // === FASE 1: HERÓI ATACA ===
         const heroDamage = Math.max(1, heroAtk - monsterDef);
-        console.log('[Attack] Hero damage:', heroDamage);
+        console.log('[Hero Attack] Dano causado:', heroDamage);
         
-        // Calcular novo HP do monstro
+        // Aplica dano ao monstro
+        damageMonster(heroDamage);
+        
         const newMonsterHp = monsterHp - heroDamage;
-        console.log('[Attack] Monster HP:', monsterHp, '->', newMonsterHp);
+        console.log('[Monster] HP após ataque:', newMonsterHp);
 
-        // Verificar se matou
+        // Verifica se matou
         if (newMonsterHp <= 0) {
-            // Monstro morreu
-            console.log('[Attack] Monster defeated! Rewards:', { gold: monsterGold, xp: monsterXp });
+            // Monstro morreu - não contra-ataca
+            console.log('[Monster] DERROTADO! +' + monsterGold + ' gold, +' + monsterXp + ' XP');
             onAddGold(monsterGold);
             onAddXP(monsterXp);
             defeatCurrentMonster();
         } else {
-            // Aplicar dano ao monstro
-            damageMonster(heroDamage);
-            
-            // Monstro sobrevive e contra-ataca
+            // === FASE 2: MONSTRO CONTRA-ATACA ===
             const monsterDamage = Math.max(1, monsterAtk - heroDef);
-            console.log('[Attack] Monster counter-attacks for:', monsterDamage);
+            console.log('[Monster Counter-Attack] Dano causado:', monsterDamage);
+            console.log('[Hero] HP antes:', hero.hp, '- Dano:', monsterDamage, '= HP depois:', hero.hp - monsterDamage);
+            
             onDamageHero(monsterDamage);
         }
+        
+        console.log('═══════════════════════════════════');
     };
 
     // Finaliza incursão com sucesso
@@ -146,12 +148,10 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                     currentRoom={currentRoom}
                     currentMonster={currentMonster}
                     hero={hero}
-                    timeRemaining={incursionTimeRemaining}
                     lootCollected={lootCollected}
                     onAttack={handleAttack}
                     onEndIncursion={handleEndIncursion}
                     onSkipIncursion={handleSkipIncursion}
-                    setTimeRemaining={setIncursionTimeRemaining}
                 />
             )}
 

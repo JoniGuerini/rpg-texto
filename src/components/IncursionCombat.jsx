@@ -1,39 +1,31 @@
-import React, { useEffect } from 'react';
-import { Swords, Clock, ArrowLeft, Trophy, Coins } from 'lucide-react';
+import React, { useState } from 'react';
+import { Swords, ArrowLeft, Trophy, Coins, Heart, Shield } from 'lucide-react';
 import { ROOM_TYPES, getRoomType } from '../data/templeRooms';
 
 const IncursionCombat = ({ 
     currentRoom, 
     currentMonster, 
     hero, 
-    timeRemaining, 
     lootCollected,
     onAttack, 
     onEndIncursion,
-    onSkipIncursion,
-    setTimeRemaining 
+    onSkipIncursion
 }) => {
+    const [combatLog, setCombatLog] = useState([]);
     const roomData = currentRoom?.data || getRoomType(currentRoom?.roomType);
 
-    // Timer countdown
-    useEffect(() => {
-        if (!lootCollected && timeRemaining > 0) {
-            const timer = setInterval(() => {
-                setTimeRemaining(prev => {
-                    if (prev <= 1) {
-                        // Tempo acabou - força fim da incursão
-                        onSkipIncursion();
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [lootCollected, timeRemaining, setTimeRemaining, onSkipIncursion]);
-
     if (!currentRoom) return null;
+
+    // Acessar stats corretamente
+    const heroHp = hero.hp || 0;
+    const heroMaxHp = hero.maxHp || 100;
+    const heroAtk = hero.stats?.atk || hero.atk || 10;
+    const heroDef = hero.stats?.def || hero.def || 2;
+
+    const handleAttackWithLog = () => {
+        onAttack();
+        // Adiciona log visual (será implementado no próximo step)
+    };
 
     return (
         <div className="absolute inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-300">
@@ -51,19 +43,25 @@ const IncursionCombat = ({
                                 {roomData?.name}
                             </h2>
                             <p className="text-xs text-[#888] uppercase tracking-widest">
-                                Nível {currentRoom.level} • Incursão Ativa
+                                Nível {currentRoom.level} • Combate Turn-Based
                             </p>
                         </div>
                     </div>
 
-                    {/* Timer */}
-                    <div className="text-center">
-                        <div className="text-xs text-[#666] uppercase tracking-widest mb-1">Tempo Restante</div>
-                        <div className={`text-4xl font-bold font-mono flex items-center gap-2 ${
-                            timeRemaining <= 5 ? 'text-red-500 animate-pulse' : 'text-[#c5a059]'
-                        }`}>
-                            <Clock size={32} />
-                            {timeRemaining}s
+                    {/* Hero HP Display */}
+                    <div className="text-center bg-[#0a0a0a] border-2 border-[#333] px-6 py-3 rounded-lg">
+                        <div className="text-xs text-[#666] uppercase tracking-widest mb-2">Sua Vida</div>
+                        <div className="flex items-center gap-2">
+                            <Heart className="text-red-500" size={20} />
+                            <div className="text-2xl font-bold font-mono text-green-400">
+                                {heroHp} / {heroMaxHp}
+                            </div>
+                        </div>
+                        <div className="w-32 h-2 bg-[#222] border border-[#333] overflow-hidden mt-2">
+                            <div 
+                                className="h-full bg-gradient-to-r from-green-900 to-green-500 transition-all duration-300"
+                                style={{ width: `${(heroHp / heroMaxHp) * 100}%` }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -125,24 +123,30 @@ const IncursionCombat = ({
 
                                 {/* Combat Button */}
                                 <button
-                                    onClick={onAttack}
-                                    className="w-full py-6 bg-red-900 hover:bg-red-800 border-2 border-red-700 text-white font-bold text-xl uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] flex items-center justify-center gap-3"
+                                    onClick={handleAttackWithLog}
+                                    className="w-full py-6 bg-red-900 hover:bg-red-800 border-2 border-red-700 text-white font-bold text-xl uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] hover:scale-105 flex items-center justify-center gap-3 active:scale-95"
                                 >
                                     <Swords size={28} />
-                                    ATACAR
+                                    ATACAR (Seu Turno)
                                 </button>
 
-                                {/* Hero HP */}
-                                <div className="mt-6 bg-[#0a0a0a] border border-[#333] p-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-xs text-[#666] uppercase tracking-widest">Sua Vida</span>
-                                        <span className="text-sm font-mono text-green-400">{hero.hp} / {hero.maxHp}</span>
-                                    </div>
-                                    <div className="w-full h-2 bg-[#222] border border-[#333] overflow-hidden">
-                                        <div 
-                                            className="h-full bg-gradient-to-r from-green-900 to-green-500 transition-all duration-300"
-                                            style={{ width: `${(hero.hp / hero.maxHp) * 100}%` }}
-                                        />
+                                {/* Hero Stats Display */}
+                                <div className="mt-6 bg-[#0a0a0a] border-2 border-[#c5a059] p-4">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="text-center">
+                                            <div className="text-xs text-[#666] uppercase tracking-widest mb-1">Seu Ataque</div>
+                                            <div className="text-2xl font-bold text-red-400 font-mono flex items-center justify-center gap-2">
+                                                <Swords size={20} />
+                                                {heroAtk}
+                                            </div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-xs text-[#666] uppercase tracking-widest mb-1">Sua Defesa</div>
+                                            <div className="text-2xl font-bold text-blue-400 font-mono flex items-center justify-center gap-2">
+                                                <Shield size={20} />
+                                                {heroDef}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -206,13 +210,13 @@ const IncursionCombat = ({
                     <div className="p-4 border-t border-[#333] bg-[#0a0a0a] flex justify-between items-center">
                         <button
                             onClick={onSkipIncursion}
-                            className="flex items-center gap-2 px-4 py-2 text-[#666] hover:text-white border border-[#333] hover:border-[#c5a059] transition-all uppercase text-xs tracking-widest"
+                            className="flex items-center gap-2 px-4 py-2 text-[#666] hover:text-white border border-[#333] hover:border-red-500 hover:bg-red-950 transition-all uppercase text-xs tracking-widest"
                         >
                             <ArrowLeft size={16} />
-                            Abandonar Incursão
+                            Fugir da Sala
                         </button>
                         <div className="text-xs text-[#555] uppercase tracking-widest">
-                            Derrote todos os inimigos antes do tempo acabar
+                            Combate Turn-Based • Derrote todos os inimigos
                         </div>
                     </div>
                 )}

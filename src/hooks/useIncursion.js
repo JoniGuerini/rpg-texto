@@ -101,7 +101,6 @@ export const useIncursion = () => {
     const [currentRoom, setCurrentRoom] = useState(null);
     const [monsters, setMonsters] = useState([]);
     const [currentMonsterIndex, setCurrentMonsterIndex] = useState(0);
-    const [incursionTimeRemaining, setIncursionTimeRemaining] = useState(15); // 15 segundos por incursão
     const [lootCollected, setLootCollected] = useState(null);
 
     // Inicia uma incursão em uma sala específica
@@ -114,7 +113,6 @@ export const useIncursion = () => {
         setCurrentRoom({ roomType, level, row, col, data: roomData });
         setMonsters(generatedMonsters);
         setCurrentMonsterIndex(0);
-        setIncursionTimeRemaining(15);
         setIncursionActive(true);
         setLootCollected(null);
     }, []);
@@ -171,14 +169,12 @@ export const useIncursion = () => {
         currentRoom,
         monsters,
         currentMonster: monsters[currentMonsterIndex] || null,
-        incursionTimeRemaining,
         lootCollected,
         startIncursion,
         damageMonster,
         defeatCurrentMonster,
         endIncursion,
-        skipIncursion,
-        setIncursionTimeRemaining
+        skipIncursion
     };
 };
 
