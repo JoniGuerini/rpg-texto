@@ -1,0 +1,90 @@
+[
+    {
+        "type": "minor",
+        "floor": 1,
+        "description": "Você encontra uma tocha esquisita",
+        "trigger": "exploration",
+        "outcome": "A tocha ilumina seu caminho, revelando um baú escondido contendo 3 de ouro.",
+        "reward": {
+            "gold": 3
+        },
+        "penalty": null,
+        "probability": 0.3,
+        "repeatable": true,
+        "cooldown": 0,
+        "special_conditions": null,
+        "npc_involved": null,
+        "item_involved": "tocha",
+        "time_limit": null,
+        "location_specific": false,
+        "quest_related": false,
+        "difficulty_level": null
+    },
+    {
+        "type": "minor",
+        "floor": 1,
+        "description": "Um trio de esqueletos guerreiros aparece de repente",
+        "trigger": "combat",
+        "outcome": "Você derrota os esqueletos!",
+        "reward": "random",
+        "penalty": null,
+        "probability": 0.2,
+        "repeatable": true,
+        "cooldown": 5,
+        "special_conditions": null,
+        "npc_involved": "trio de esqueletos guerreiros",
+        "item_involved": "poção de cura",
+        "time_limit": null,
+        "location_specific": [
+            3,
+            6,
+            9
+        ],
+        "quest_related": false,
+        "difficulty_level": "médio"
+    },
+    {
+        "type": "unique",
+        "floor": 1,
+        "description": "Você encontra um velho alquimista que oferece uma receita rara",
+        "trigger": "npc-interaction",
+        "outcome": "O alquimista ensina você a criar uma poção de cura maior em troca de 50 de ouro.",
+        "reward": {
+            "recipe": "greater_healing_potion"
+        },
+        "penalty": {
+            "gold": 50
+        },
+        "probability": 0.1,
+        "repeatable": false,
+        "cooldown": null,
+        "special_conditions": null,
+        "npc_involved": "velho alquimista",
+        "item_involved": "receita de poção de cura maior",
+        "time_limit": null,
+        "location_specific": [
+            9
+        ],
+        "quest_related": false,
+        "difficulty_level": null
+    },
+    {
+        "type": "minor",
+        "floor": 1,
+        "description": "O corredor está silencioso e úmido.",
+        "trigger": "exploration",
+        "outcome": "Nada acontece.",
+        "reward": null,
+        "penalty": null,
+        "probability": 0.4,
+        "repeatable": true,
+        "cooldown": 0,
+        "special_conditions": null,
+        "npc_involved": null,
+        "item_involved": null,
+        "time_limit": null,
+        "location_specific": false,
+        "quest_related": false,
+        "difficulty_level": null
+    }
+]

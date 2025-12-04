@@ -1,0 +1,77 @@
+[
+    {
+        "id": "potion_small",
+        "name": "Poção Pequena",
+        "type": "consumable",
+        "effect": "heal",
+        "value": 20,
+        "price": 15,
+        "rarity": "common"
+    },
+    {
+        "id": "potion_medium",
+        "name": "Poção Média",
+        "type": "consumable",
+        "effect": "heal",
+        "value": 50,
+        "price": 40,
+        "rarity": "uncommon"
+    },
+    {
+        "id": "leather",
+        "name": "Couro",
+        "type": "material",
+        "price": 5,
+        "rarity": "common"
+    },
+    {
+        "id": "glycerin",
+        "name": "Glicerina",
+        "type": "material",
+        "price": 10,
+        "rarity": "common"
+    },
+    {
+        "id": "cloth",
+        "name": "Tecido",
+        "type": "material",
+        "price": 3,
+        "rarity": "common"
+    },
+    {
+        "id": "rune_stone",
+        "name": "Pedra Rúnica",
+        "type": "material",
+        "price": 25,
+        "rarity": "uncommon"
+    },
+    {
+        "id": "coin",
+        "name": "Moeda",
+        "type": "currency",
+        "value": 1,
+        "rarity": "common"
+    },
+    {
+        "id": "old_bow",
+        "name": "Arco Velho",
+        "type": "weapon",
+        "slot": "weapon",
+        "stats": {
+            "atk": 2
+        },
+        "price": 12,
+        "rarity": "common"
+    },
+    {
+        "id": "corroded_sword",
+        "name": "Espada Corroída",
+        "type": "weapon",
+        "slot": "weapon",
+        "stats": {
+            "atk": 5
+        },
+        "price": 45,
+        "rarity": "uncommon"
+    }
+]

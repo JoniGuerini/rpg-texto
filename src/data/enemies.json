@@ -1,0 +1,172 @@
+[
+    {
+        "id": "rat_catacombs",
+        "name": "Rato das Catacumbas",
+        "level": 1,
+        "hp": 12,
+        "maxHp": 12,
+        "atk": 4,
+        "def": 1,
+        "spd": 6,
+        "xp": 8,
+        "drops": [
+            {
+                "itemId": "leather",
+                "chance": 0.6
+            },
+            {
+                "itemId": "glycerin",
+                "chance": 0.1
+            }
+        ]
+    },
+    {
+        "id": "acolyte_dark",
+        "name": "Acólito Sombrio",
+        "level": 2,
+        "hp": 22,
+        "maxHp": 22,
+        "atk": 6,
+        "def": 3,
+        "spd": 5,
+        "xp": 18,
+        "drops": [
+            {
+                "itemId": "cloth",
+                "chance": 0.5
+            },
+            {
+                "itemId": "potion_small",
+                "chance": 0.2
+            }
+        ]
+    },
+    {
+        "id": "guardian_stone",
+        "name": "Guardião de Pedra",
+        "level": 3,
+        "hp": 36,
+        "maxHp": 36,
+        "atk": 8,
+        "def": 6,
+        "spd": 3,
+        "xp": 32,
+        "drops": [
+            {
+                "itemId": "rune_stone",
+                "chance": 0.25
+            },
+            {
+                "itemId": "coin",
+                "chance": 0.7
+            }
+        ]
+    },
+    {
+        "id": "wolf_corpse",
+        "name": "Lobo Cadavérico",
+        "level": 3,
+        "hp": 30,
+        "maxHp": 30,
+        "atk": 9,
+        "def": 2,
+        "spd": 8,
+        "xp": 30,
+        "drops": [
+            {
+                "itemId": "pelt",
+                "chance": 0.6
+            },
+            {
+                "itemId": "tooth",
+                "chance": 0.2
+            }
+        ]
+    },
+    {
+        "id": "specter_nave",
+        "name": "Espectro da Nave",
+        "level": 4,
+        "hp": 28,
+        "maxHp": 28,
+        "atk": 10,
+        "def": 2,
+        "spd": 7,
+        "xp": 36,
+        "drops": [
+            {
+                "itemId": "spectral_essence",
+                "chance": 0.15
+            },
+            {
+                "itemId": "potion_medium",
+                "chance": 0.3
+            }
+        ]
+    },
+    {
+        "id": "archer_silent",
+        "name": "Arqueiro Silente",
+        "level": 2,
+        "hp": 18,
+        "maxHp": 18,
+        "atk": 7,
+        "def": 2,
+        "spd": 6,
+        "xp": 20,
+        "drops": [
+            {
+                "itemId": "arrow",
+                "chance": 0.8
+            },
+            {
+                "itemId": "old_bow",
+                "chance": 0.25
+            }
+        ]
+    },
+    {
+        "id": "knight_corrupted",
+        "name": "Cavaleiro Corrompido",
+        "isMiniBoss": true,
+        "level": 5,
+        "hp": 78,
+        "maxHp": 78,
+        "atk": 14,
+        "def": 8,
+        "spd": 4,
+        "xp": 100,
+        "drops": [
+            {
+                "itemId": "corroded_sword",
+                "chance": 0.4
+            },
+            {
+                "itemId": "coin_large",
+                "chance": 0.8
+            }
+        ]
+    },
+    {
+        "id": "guardian_nave_boss",
+        "name": "Guardião da Nave",
+        "isBoss": true,
+        "level": 8,
+        "hp": 220,
+        "maxHp": 220,
+        "atk": 22,
+        "def": 12,
+        "spd": 5,
+        "xp": 420,
+        "drops": [
+            {
+                "itemId": "guardian_insignia",
+                "chance": 1.0
+            },
+            {
+                "itemId": "rare_weapon",
+                "chance": 0.6
+            }
+        ]
+    }
+]
