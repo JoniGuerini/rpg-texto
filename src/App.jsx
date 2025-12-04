@@ -46,6 +46,7 @@ function App() {
     const [previousView, setPreviousView] = useState('VILLAGE'); // Track previous view for back navigation
     const [selectedProfession, setSelectedProfession] = useState(null);
     const [floor, setFloor] = useState(1);
+    const [corridor, setCorridor] = useState(1);
 
     const handleViewChange = (view, data = null) => {
         // If navigating TO a menu view FROM a world view, save the world view
