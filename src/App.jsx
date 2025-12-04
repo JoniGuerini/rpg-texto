@@ -5,6 +5,7 @@ import Village from './components/Village';
 import Documentation from './components/Documentation';
 import CharacterSheet from './components/CharacterSheet';
 import ErrorBoundary from './components/ErrorBoundary';
+import UpdateNotification from './components/UpdateNotification';
 
 import HUDLeft from './components/HUDLeft';
 import HUDRight from './components/HUDRight';
@@ -17,6 +18,7 @@ import { useQuests } from './hooks/useQuests';
 import { useCoalMine } from './hooks/useCoalMine';
 import { useInventory } from './hooks/useInventory';
 import { useSaveGame } from './hooks/useSaveGame';
+import { useVersionCheck } from './hooks/useVersionCheck';
 import QuestLog from './components/QuestLog';
 import InventoryInterface from './components/InventoryInterface';
 
@@ -48,6 +50,9 @@ function App() {
         type: 'info'
     }]);
     const [saveLoaded, setSaveLoaded] = useState(false);
+
+    // Version Check Hook
+    const { newVersionAvailable, reloadApp } = useVersionCheck();
 
     if (!hero) {
         return <div className="flex items-center justify-center h-screen text-red-500 font-bold text-2xl">ERRO CRÍTICO: Herói não inicializado. Verifique INITIAL_HERO.</div>;
@@ -605,6 +610,9 @@ function App() {
                     </div>
                 );
             })()}
+
+            {/* Update Notification */}
+            {newVersionAvailable && <UpdateNotification onReload={reloadApp} />}
         </div>
     );
 }
