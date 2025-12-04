@@ -28,6 +28,7 @@ cd dist
 
 echo.
 echo [5/7] Inicializando Git na pasta dist...
+if exist .git rmdir /s /q .git
 git init
 git checkout -b gh-pages
 git add -A
