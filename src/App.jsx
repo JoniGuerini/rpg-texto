@@ -16,6 +16,7 @@ import { useCombat } from './hooks/useCombat';
 import { useQuests } from './hooks/useQuests';
 import { useCoalMine } from './hooks/useCoalMine';
 import { useInventory } from './hooks/useInventory';
+import { useSaveGame } from './hooks/useSaveGame';
 import QuestLog from './components/QuestLog';
 import InventoryInterface from './components/InventoryInterface';
 
@@ -36,17 +37,21 @@ const INITIAL_INVENTORY = [
 
 function App() {
     const [hero, setHero] = useState(INITIAL_HERO);
+    const [activeView, setActiveView] = useState('VILLAGE');
+    const [previousView, setPreviousView] = useState('VILLAGE');
+    const [selectedProfession, setSelectedProfession] = useState(null);
+    const [floor, setFloor] = useState(1);
+    const [corridor, setCorridor] = useState(1);
+    const [logs, setLogs] = useState([{
+        time: new Date().toLocaleTimeString(),
+        text: "Você entra na Catedral Sombria. O ar é frio e úmido.",
+        type: 'info'
+    }]);
+    const [saveLoaded, setSaveLoaded] = useState(false);
 
     if (!hero) {
         return <div className="flex items-center justify-center h-screen text-red-500 font-bold text-2xl">ERRO CRÍTICO: Herói não inicializado. Verifique INITIAL_HERO.</div>;
     }
-
-    const [activeView, setActiveView] = useState('VILLAGE'); // Start in VILLAGE by default
-
-    const [previousView, setPreviousView] = useState('VILLAGE'); // Track previous view for back navigation
-    const [selectedProfession, setSelectedProfession] = useState(null);
-    const [floor, setFloor] = useState(1);
-    const [corridor, setCorridor] = useState(1);
 
     const handleViewChange = (view, data = null) => {
         // If navigating TO a menu view FROM a world view, save the world view
@@ -67,12 +72,6 @@ function App() {
     const handleCloseMenu = () => {
         setActiveView(previousView);
     };
-
-    const [logs, setLogs] = useState([{
-        time: new Date().toLocaleTimeString(),
-        text: "Você entra na Catedral Sombria. O ar é frio e úmido.",
-        type: 'info'
-    }]);
 
     const addLog = useCallback((text, type = 'info') => {
         setLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), text, type }]);
@@ -97,6 +96,47 @@ function App() {
 
     // Initialize Coal Mine (Idle Mechanic)
     const coalMine = useCoalMine(hero, setHero);
+
+    // Save/Load System
+    const gameStateToSave = {
+        hero,
+        activeView,
+        floor,
+        corridor,
+        logs,
+        questState,
+        inventory: inventory.filter(slot => slot !== null),
+        coalMine: {
+            coal: coalMine.coal,
+            capacity: coalMine.capacity,
+            rate: coalMine.rate,
+            upgrades: coalMine.upgrades
+        }
+    };
+
+    const { saveGame, loadGame, deleteSave, hasSave } = useSaveGame(gameStateToSave);
+
+    // Load save on mount
+    useEffect(() => {
+        if (!saveLoaded) {
+            const savedData = loadGame();
+            if (savedData) {
+                setHero(savedData.hero || INITIAL_HERO);
+                setActiveView(savedData.activeView || 'VILLAGE');
+                setFloor(savedData.floor || 1);
+                setCorridor(savedData.corridor || 1);
+                setLogs(savedData.logs || logs);
+                addLog("Progresso carregado com sucesso!", 'info');
+            }
+            setSaveLoaded(true);
+        }
+    }, [saveLoaded, loadGame, logs, addLog]);
+
+    // Reset game function
+    const handleResetGame = () => {
+        deleteSave();
+        window.location.reload();
+    };
 
     const handleCollectMine = () => {
         const result = coalMine.collectResources();
@@ -407,6 +447,8 @@ function App() {
                         hero={hero}
                         onClose={handleCloseMenu}
                         onUpdateName={handleUpdateName}
+                        onResetGame={handleResetGame}
+                        hasSave={hasSave()}
                     />
                 ) : activeView === 'QUESTS' ? (
                     <QuestLog

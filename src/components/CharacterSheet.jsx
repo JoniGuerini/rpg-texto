@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Shield, Sword, Zap, Activity, Crown, X, Heart, Star, Pencil, Check } from 'lucide-react';
+import { User, Shield, Sword, Zap, Activity, Crown, X, Heart, Star, Pencil, Check, RefreshCw, Save } from 'lucide-react';
 import characterPortrait from '../assets/character_portrait.png';
 
 const StatRow = ({ label, value, bonus, icon: Icon, color = "text-[#888]" }) => (
@@ -41,9 +41,10 @@ const EquipmentSlot = ({ label, item }) => (
     </div>
 );
 
-const CharacterSheet = ({ hero, onClose, onUpdateName }) => {
+const CharacterSheet = ({ hero, onClose, onUpdateName, onResetGame, hasSave }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempName, setTempName] = useState(hero.name);
+    const [showResetModal, setShowResetModal] = useState(false);
 
     const handleSaveName = () => {
         if (tempName.trim()) {
@@ -58,6 +59,13 @@ const CharacterSheet = ({ hero, onClose, onUpdateName }) => {
         } else if (e.key === 'Escape') {
             setTempName(hero.name);
             setIsEditing(false);
+        }
+    };
+
+    const handleConfirmReset = () => {
+        setShowResetModal(false);
+        if (onResetGame) {
+            onResetGame();
         }
     };
 
@@ -228,7 +236,65 @@ const CharacterSheet = ({ hero, onClose, onUpdateName }) => {
                         </div>
                     </div>
 
+                    {/* Save/Reset Section */}
+                    <div className="mt-6 pt-6 border-t border-[#333] space-y-3">
+                        <div className="flex items-center justify-between text-xs px-4">
+                            <div className="flex items-center gap-2">
+                                <Save size={14} className="text-[#c5a059]" />
+                                <span className="text-[#888]">
+                                    {hasSave ? 'Progresso salvo automaticamente' : 'Nenhum progresso salvo'}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <button
+                            onClick={() => setShowResetModal(true)}
+                            className="w-full py-3 px-4 bg-red-900/20 border border-red-900 text-red-400 hover:bg-red-900/40 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider"
+                        >
+                            <RefreshCw size={16} />
+                            Resetar Aventura
+                        </button>
+                    </div>
+
                 </div>
+
+                {/* Reset Confirmation Modal */}
+                {showResetModal && (
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+                        <div className="bg-[#0e0e0e] border-2 border-red-900 p-6 max-w-md animate-in zoom-in-95 duration-200">
+                            <h3 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+                                <RefreshCw size={24} />
+                                Resetar Aventura?
+                            </h3>
+                            <p className="text-[#ccc] mb-6">
+                                Esta ação irá <span className="text-red-400 font-bold">deletar todo o seu progresso</span> atual, incluindo:
+                            </p>
+                            <ul className="text-[#888] text-sm space-y-1 mb-6 pl-4">
+                                <li>• Nível e experiência</li>
+                                <li>• Inventário e equipamentos</li>
+                                <li>• Missões e conquistas</li>
+                                <li>• Recursos e materiais</li>
+                            </ul>
+                            <p className="text-[#c5a059] font-bold mb-6">
+                                Você começará uma nova aventura do zero.
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowResetModal(false)}
+                                    className="flex-1 py-2 px-4 bg-[#111] border border-[#333] text-[#ccc] hover:bg-[#1a1a1a] hover:border-[#c5a059] transition-all font-bold uppercase text-sm"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleConfirmReset}
+                                    className="flex-1 py-2 px-4 bg-red-900/30 border border-red-900 text-red-400 hover:bg-red-900/50 transition-all font-bold uppercase text-sm"
+                                >
+                                    Resetar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
