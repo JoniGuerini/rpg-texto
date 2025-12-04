@@ -371,60 +371,32 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                     </div>
                 </div>
 
-                {/* Death Screen */}
-                {showDeathScreen && (
-                    <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-[99999] animate-in fade-in duration-500">
-                        <div className="bg-[#0a0a0a] border-2 border-red-900 shadow-[0_0_50px_rgba(220,38,38,0.5)] p-8 max-w-md text-center">
-                            <div className="text-6xl mb-4 animate-pulse">💀</div>
-                            <h2 className="text-3xl font-bold text-red-500 font-['Cinzel'] mb-2">
-                                VOCÊ MORREU
-                            </h2>
-                            <p className="text-[#888] mb-2">
-                                As sombras do Templo consumiram sua alma.
-                            </p>
-                            <p className="text-sm text-red-400 mb-6">
-                                O Templo de Atzoatl foi perdido e deve ser reconstruído.
-                            </p>
-                            <button
-                                onClick={handleHeroDeath}
-                                className="w-full py-4 bg-red-900 hover:bg-red-800 border-2 border-red-700 text-white font-bold uppercase tracking-widest text-sm transition-all"
-                            >
-                                Retornar à Vila
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Completion Message */}
-                {templeCompleted && !showDeathScreen && (
-                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-                        <div className="bg-[#0a0a0a] border-2 border-[#c5a059] p-8 max-w-md text-center">
-                            <div className="text-6xl mb-4">🏛️</div>
-                            <h2 className="text-2xl font-bold text-[#c5a059] font-['Cinzel'] mb-2">
-                                Templo Construído!
-                            </h2>
-                            <p className="text-[#888] mb-6">
-                                O Templo de Atzoatl está pronto para ser explorado.
-                            </p>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={resetTemple}
-                                    className="flex-1 py-3 bg-[#1a1a1a] border border-[#333] hover:border-[#c5a059] text-[#888] hover:text-[#c5a059] transition-all uppercase tracking-widest text-xs"
-                                >
-                                    Reconstruir
-                                </button>
-                                <button
-                                    onClick={onClose}
-                                    className="flex-1 py-3 bg-[#c5a059] hover:bg-[#d4b06a] text-black font-bold uppercase tracking-widest text-xs transition-all"
-                                >
-                                    Explorar Templo
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
+
+        {/* Death Screen - Renderizado FORA e ACIMA de tudo */}
+        {showDeathScreen && (
+            <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100000] animate-in fade-in duration-500 pointer-events-auto">
+                <div className="bg-[#0a0a0a] border-2 border-red-900 shadow-[0_0_50px_rgba(220,38,38,0.5)] p-8 max-w-md text-center relative z-50">
+                    <div className="text-6xl mb-4 animate-pulse">💀</div>
+                    <h2 className="text-3xl font-bold text-red-500 font-['Cinzel'] mb-2">
+                        VOCÊ MORREU
+                    </h2>
+                    <p className="text-[#888] mb-2">
+                        As sombras do Templo consumiram sua alma.
+                    </p>
+                    <p className="text-sm text-red-400 mb-6">
+                        O Templo de Atzoatl foi perdido e deve ser reconstruído.
+                    </p>
+                    <button
+                        onClick={handleHeroDeath}
+                        className="w-full py-4 bg-red-900 hover:bg-red-800 border-2 border-red-700 text-white font-bold uppercase tracking-widest text-sm transition-all shadow-lg hover:shadow-red-900/50"
+                    >
+                        Retornar à Vila
+                    </button>
+                </div>
+            </div>
+        )}
         </>
     );
 };
