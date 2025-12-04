@@ -314,13 +314,13 @@ const Village = ({ onNavigate, hero, onHeal, onDeductGold, onBuyItem, onSellItem
             {!activeBuilding && (
                 <div className="relative z-10 pb-12 flex justify-center">
                     <button
-                        onClick={() => onNavigate('GAME')}
+                        onClick={() => onNavigate('TEMPLE')}
                         className="group flex items-center gap-4 px-8 py-4 bg-[#1a0505] border border-[#444] hover:border-red-900 hover:bg-[#2a0505] transition-all shadow-[0_0_30px_rgba(0,0,0,0.8)]"
                     >
                         <DoorOpen size={32} className="text-[#666] group-hover:text-red-500 transition-colors" />
                         <div className="text-left">
-                            <div className="text-[#ccc] font-bold font-['Cinzel'] text-lg group-hover:text-red-100">Entrar na Catedral</div>
-                            <div className="text-xs text-[#555] uppercase tracking-widest group-hover:text-red-900">Iniciar Aventura</div>
+                            <div className="text-[#ccc] font-bold font-['Cinzel'] text-lg group-hover:text-red-100">Templo de Atzoatl</div>
+                            <div className="text-xs text-[#555] uppercase tracking-widest group-hover:text-red-900">Construir Masmorra</div>
                         </div>
                     </button>
                 </div>

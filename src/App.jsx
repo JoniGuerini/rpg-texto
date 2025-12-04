@@ -6,6 +6,7 @@ import Documentation from './components/Documentation';
 import CharacterSheet from './components/CharacterSheet';
 import ErrorBoundary from './components/ErrorBoundary';
 import UpdateNotification from './components/UpdateNotification';
+import TempleBuilder from './components/TempleBuilder';
 
 import HUDLeft from './components/HUDLeft';
 import HUDRight from './components/HUDRight';
@@ -439,6 +440,10 @@ function App() {
                         inventory={inventoryList} 
                         coalMine={{...coalMine, collectResources: handleCollectMine}}
                         onOpenStash={() => handleViewChange('STASH')}
+                    />
+                ) : activeView === 'TEMPLE' ? (
+                    <TempleBuilder
+                        onClose={handleCloseMenu}
                     />
                 ) : activeView === 'TALENTS' ? (
                     <TalentTree
