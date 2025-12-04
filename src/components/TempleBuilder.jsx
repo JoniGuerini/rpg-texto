@@ -373,7 +373,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
 
                 {/* Death Screen */}
                 {showDeathScreen && (
-                    <div className="absolute inset-0 bg-black/95 flex items-center justify-center z-[70] animate-in fade-in duration-500">
+                    <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-[99999] animate-in fade-in duration-500">
                         <div className="bg-[#0a0a0a] border-2 border-red-900 shadow-[0_0_50px_rgba(220,38,38,0.5)] p-8 max-w-md text-center">
                             <div className="text-6xl mb-4 animate-pulse">💀</div>
                             <h2 className="text-3xl font-bold text-red-500 font-['Cinzel'] mb-2">
