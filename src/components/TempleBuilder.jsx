@@ -115,12 +115,18 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
 
     // Morte do herói - reseta templo e sai da incursão
     const handleHeroDeath = () => {
+        console.log('[Death] Iniciando processo de morte...');
+        
+        // 1. Oculta telas internas
         setShowDeathScreen(false);
-        skipIncursion();
-        resetTemple();
-        // Restaura HP do herói COMPLETAMENTE
-        onHeal(); // Chama handleHealFull do App.jsx
-        console.log('[Death] Templo resetado, herói curado completamente');
+        
+        // 2. Cura o herói (State Global)
+        onHeal(); 
+        
+        // 3. Fecha o Templo e volta para a Vila (Isso desmonta o componente e reseta os estados locais)
+        onClose();
+        
+        console.log('[Death] Retornando à Vila e resetando');
     };
 
     // Finaliza incursão com sucesso

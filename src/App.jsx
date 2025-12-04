@@ -351,10 +351,14 @@ function App() {
     };
 
     const handleHealFull = () => {
-        setHero(prev => ({
-            ...prev,
-            hp: prev.maxHp
-        }));
+        setHero(prev => {
+            const safeMaxHp = prev.maxHp > 0 ? prev.maxHp : 100; // Fallback de segurança
+            console.log('[App] Healing Full:', prev.hp, '->', safeMaxHp);
+            return {
+                ...prev,
+                hp: safeMaxHp
+            };
+        });
     };
 
     const handleDeductGold = (amount) => {
