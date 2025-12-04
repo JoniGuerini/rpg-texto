@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Hammer, Heart, FlaskConical, DoorOpen, MessageSquare, X, Coins, ArrowLeft, Home, User, Pickaxe, Archive } from 'lucide-react';
 import ShopInterface from './ShopInterface';
 import CoalMineInterface from './CoalMineInterface';
-import { GRISWOLD_SHOP, PEPIN_SHOP } from '../data/shopData';
+import { GRISWOLD_SHOP, PEPIN_SHOP, AKARA_SHOP } from '../data/shopData';
 import forgeImage from '../assets/forge.png';
 import griswoldPortrait from '../assets/griswold.png';
 
@@ -49,9 +49,12 @@ const NPC_DIALOGS = {
             "Sinto uma perturbação no éter mágico. Algo antigo e maligno despertou.",
             "A Irmandade do Olho Cego costumava proteger este lugar. Agora, restam apenas algumas de nós.",
             "Não subestime o poder da fé. Às vezes, é o único escudo que resta contra a escuridão.",
-            "Vi corvos pousando no cemitério. Um mau presságio. A morte caminha entre nós."
+            "Vi corvos pousando no cemitério. Um mau presságio. A morte caminha entre nós.",
+            "Estes artefatos mágicos foram abençoados pela Irmandade. Use-os com sabedoria.",
+            "Cada varinha carrega uma fração do poder arcano. Nas mãos certas, pode mudar o destino."
         ],
         options: [
+            { id: 'trade', label: 'Artefatos Mágicos', icon: Coins },
             { id: 'heal', label: 'Curar Ferimentos', cost: 20, icon: Heart },
             { id: 'whisper', label: 'Sussurros', icon: MessageSquare }
         ]
@@ -171,12 +174,22 @@ const Village = ({ onNavigate, hero, onHeal, onDeductGold, onBuyItem, onSellItem
                 onNavigate('PROFESSIONS', 'alchemy');
             }
         } else if (option.id === 'trade') {
-            // Griswold's Shop (Managed by Apprentice or Griswold)
-            setCurrentShop({
-                data: GRISWOLD_SHOP,
-                title: 'Loja de Griswold',
-                subtitle: 'Equipamentos de Qualidade'
-            });
+            // Determine which shop based on current NPC
+            if (activeNPC.name === 'Thomas') {
+                // Griswold's Shop (Managed by Apprentice)
+                setCurrentShop({
+                    data: GRISWOLD_SHOP,
+                    title: 'Loja de Griswold',
+                    subtitle: 'Equipamentos de Qualidade'
+                });
+            } else if (activeNPC.name === 'Akara') {
+                // Akara's Magic Shop
+                setCurrentShop({
+                    data: AKARA_SHOP,
+                    title: 'Artefatos de Akara',
+                    subtitle: 'Itens Mágicos e Relíquias Sagradas'
+                });
+            }
             setShowShop(true);
         } else if (option.id === 'shop') {
             // Pepin
