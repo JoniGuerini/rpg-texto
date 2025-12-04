@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 
 const BUILD_TIME = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : null;
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0';
 const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos
 
 export const useVersionCheck = () => {
     const [newVersionAvailable, setNewVersionAvailable] = useState(false);
     const [isReloading, setIsReloading] = useState(false);
+    const [newVersion, setNewVersion] = useState(null);
 
     useEffect(() => {
         // Verifica se acabamos de fazer reload intencional
@@ -38,6 +40,10 @@ export const useVersionCheck = () => {
                 
                 const html = await response.text();
                 
+                // Extrai a versão do HTML
+                const versionMatch = html.match(/<meta name="app-version" content="([^"]+)"/);
+                const serverVersion = versionMatch ? versionMatch[1] : null;
+                
                 // Extrai os nomes dos arquivos JS/CSS do HTML (mais confiável que hash completo)
                 const jsMatches = html.match(/src="[^"]*\/assets\/index-[^"]+\.js"/g);
                 const cssMatches = html.match(/href="[^"]*\/assets\/index-[^"]+\.css"/g);
@@ -48,6 +54,7 @@ export const useVersionCheck = () => {
                 if (storedAssets && storedAssets !== currentAssets && currentAssets) {
                     // Nova versão detectada!
                     setNewVersionAvailable(true);
+                    setNewVersion(serverVersion || APP_VERSION);
                 } else if (!storedAssets && currentAssets) {
                     // Primeira vez, salva os assets atuais
                     localStorage.setItem('app_assets', currentAssets);
@@ -114,6 +121,12 @@ export const useVersionCheck = () => {
         }
     };
 
-    return { newVersionAvailable, reloadApp, isReloading };
+    return { 
+        newVersionAvailable, 
+        reloadApp, 
+        isReloading,
+        currentVersion: APP_VERSION,
+        newVersion 
+    };
 };
 

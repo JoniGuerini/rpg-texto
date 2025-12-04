@@ -52,7 +52,7 @@ function App() {
     const [saveLoaded, setSaveLoaded] = useState(false);
 
     // Version Check Hook
-    const { newVersionAvailable, reloadApp, isReloading } = useVersionCheck();
+    const { newVersionAvailable, reloadApp, isReloading, currentVersion, newVersion } = useVersionCheck();
 
     if (!hero) {
         return <div className="flex items-center justify-center h-screen text-red-500 font-bold text-2xl">ERRO CRÍTICO: Herói não inicializado. Verifique INITIAL_HERO.</div>;
@@ -612,7 +612,13 @@ function App() {
             })()}
 
             {/* Update Notification */}
-            {newVersionAvailable && !isReloading && <UpdateNotification onReload={reloadApp} />}
+            {newVersionAvailable && !isReloading && (
+                <UpdateNotification 
+                    onReload={reloadApp} 
+                    currentVersion={currentVersion}
+                    newVersion={newVersion}
+                />
+            )}
         </div>
     );
 }
