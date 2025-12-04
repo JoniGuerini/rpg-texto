@@ -350,6 +350,13 @@ function App() {
         }));
     };
 
+    const handleHealFull = () => {
+        setHero(prev => ({
+            ...prev,
+            hp: prev.maxHp
+        }));
+    };
+
     const handleDeductGold = (amount) => {
         setHero(prev => ({
             ...prev,
@@ -487,7 +494,7 @@ function App() {
                         onAddItem={(item, count) => addItem(item, count)}
                         onDamageHero={handleDamageHero}
                         onAddXP={handleAddXP}
-                        onHeal={handleHeal}
+                        onHeal={handleHealFull}
                     />
                 ) : activeView === 'TALENTS' ? (
                     <TalentTree

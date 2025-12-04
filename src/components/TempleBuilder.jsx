@@ -118,9 +118,9 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         setShowDeathScreen(false);
         skipIncursion();
         resetTemple();
-        // Restaura HP do herói
-        onHeal(hero.maxHp);
-        console.log('[Death] Templo resetado, herói curado');
+        // Restaura HP do herói COMPLETAMENTE
+        onHeal(); // Chama handleHealFull do App.jsx
+        console.log('[Death] Templo resetado, herói curado completamente');
     };
 
     // Finaliza incursão com sucesso
