@@ -32,6 +32,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
     } = useIncursion();
 
     const [showDeathScreen, setShowDeathScreen] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
 
     const handleCellClick = (row, col) => {
         // Tenta mover para a sala
