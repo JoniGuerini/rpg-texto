@@ -137,8 +137,8 @@ const InventoryInterface = ({ onClose, inventoryData }) => {
     };
 
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-8 animate-in fade-in zoom-in-95 duration-300">
-            <div className="bg-[#0c0c0c] border-2 border-[#333] shadow-2xl p-1 relative flex gap-1">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
+            <div className="bg-[#0c0c0c] border-2 border-[#333] shadow-2xl p-1 relative flex gap-1 max-w-[95vw] overflow-auto">
                 
                 {/* Close Button */}
                 <button 

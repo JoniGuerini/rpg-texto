@@ -1234,8 +1234,8 @@ const Documentation = ({ onClose }) => {
     };
 
     return (
-        <div className="absolute inset-0 z-[100] bg-[#050505]/95 backdrop-blur-sm flex items-center justify-center p-8 animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-full max-w-6xl h-[85vh] panel-diablo flex relative overflow-hidden">
+        <div className="absolute inset-0 z-[100] bg-[#050505]/95 backdrop-blur-sm flex items-center justify-center p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-[95vw] max-w-7xl h-[92vh] md:h-[88vh] panel-diablo flex relative overflow-hidden">
 
                 {/* Sidebar Menu */}
                 <div className="w-64 bg-[#0c0c0c] border-r-2 border-[#333] flex flex-col">

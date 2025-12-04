@@ -15,7 +15,7 @@ const QuestLog = ({ questState, onClose, onClaim }) => {
 
     return (
         <div className="absolute top-0 left-0 w-full h-full bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-full max-w-2xl h-[80%] panel-diablo flex flex-col bg-texture-dark border-double-gold relative">
+            <div className="w-[95vw] max-w-3xl h-[90%] md:h-[85%] panel-diablo flex flex-col bg-texture-dark border-double-gold relative">
                 
                 {/* Header */}
                 <div className="p-4 border-b border-[#333] flex justify-between items-center bg-ornate-pattern">

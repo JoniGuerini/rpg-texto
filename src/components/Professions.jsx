@@ -193,8 +193,8 @@ const Professions = ({ onClose, initialProfessionId, inventory = [], onUseItem, 
     const canCraftSelected = selectedRecipe ? canCraft(selectedRecipe) : false;
 
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-8 animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-full max-w-5xl h-[80vh] bg-[#0c0c0c] border border-[#333] shadow-2xl flex flex-col relative overflow-hidden">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-[95vw] max-w-6xl h-[92vh] md:h-[85vh] bg-[#0c0c0c] border border-[#333] shadow-2xl flex flex-col relative overflow-hidden">
 
                 {/* Close Button */}
                 <button

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Coins, X, ShoppingBag, ArrowRight, Hammer } from 'lucide-react';
 
 const RarityColor = {
@@ -16,6 +16,23 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
     // Filter inventory for sellable items (optional: filter out quest items)
     const sellableItems = inventory.filter(slot => slot.item.value > 0);
 
+    // Update selected item count when inventory changes
+    useEffect(() => {
+        if (selectedItem && activeTab === 'sell') {
+            const updatedSlot = inventory.find(slot => 
+                slot && slot.item.id === selectedItem.id
+            );
+            
+            if (updatedSlot) {
+                // Update count in selected item
+                setSelectedItem(prev => ({ ...prev, count: updatedSlot.count }));
+            } else {
+                // Item no longer exists, deselect
+                setSelectedItem(null);
+            }
+        }
+    }, [inventory, selectedItem, activeTab]);
+
     const handleBuy = () => {
         if (selectedItem && heroGold >= selectedItem.value) {
             onBuy(selectedItem);
@@ -26,13 +43,13 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
     const handleSell = () => {
         if (selectedItem) {
             onSell(selectedItem);
-            setSelectedItem(null);
+            // Note: useEffect will automatically update count or deselect if item runs out
         }
     };
 
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-8 animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-full max-w-4xl h-[70vh] bg-[#0c0c0c] border border-[#333] shadow-2xl flex flex-col relative overflow-hidden">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-[95vw] max-w-5xl h-[90vh] md:h-[75vh] bg-[#0c0c0c] border border-[#333] shadow-2xl flex flex-col relative overflow-hidden">
 
                 {/* Close Button */}
                 <button
@@ -194,6 +211,9 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                                     <div className="flex justify-between items-center mb-4">
                                         <span className="text-[#888] text-sm uppercase tracking-widest">
                                             {activeTab === 'buy' ? 'Custo' : 'Valor de Venda'}
+                                            {activeTab === 'sell' && selectedItem.count && (
+                                                <span className="ml-2 text-[#c5a059]">({selectedItem.count} disponível)</span>
+                                            )}
                                         </span>
                                         <div className="text-2xl font-bold font-mono text-[#c5a059] flex items-center gap-2">
                                             {activeTab === 'buy' ? selectedItem.value : Math.floor(selectedItem.value / 2)} <Coins size={20} />
@@ -211,7 +231,7 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                                         {activeTab === 'buy' ? (
                                             <>COMPRAR <ArrowRight size={20} /></>
                                         ) : (
-                                            <>VENDER <Coins size={20} /></>
+                                            <>VENDER (1x) <Coins size={20} /></>
                                         )}
                                     </button>
                                     {activeTab === 'buy' && heroGold < selectedItem.value && (

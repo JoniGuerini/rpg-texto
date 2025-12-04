@@ -6,8 +6,8 @@ const CoalMineInterface = ({ onClose, miningState, buyUpgrade, resolveStatus, co
     const percentage = Math.min(100, (coal / maxCoal) * 100);
 
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-8 animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-full max-w-4xl bg-[#0a0a0a] border border-[#333] shadow-2xl relative flex flex-col overflow-hidden h-[80vh]">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-[95vw] max-w-5xl bg-[#0a0a0a] border border-[#333] shadow-2xl relative flex flex-col overflow-hidden h-[92vh] md:h-[85vh]">
                 
                 {/* Close Button */}
                 <button 

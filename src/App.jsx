@@ -105,7 +105,7 @@ function App() {
         corridor,
         logs,
         questState,
-        inventory: inventory.filter(slot => slot !== null),
+        inventory: inventory, // Save complete grid with nulls to preserve positions
         coalMine: {
             coal: coalMine.miningState.coal,
             maxCoal: coalMine.miningState.maxCoal,
@@ -132,8 +132,8 @@ function App() {
                     setQuestState(savedData.questState);
                 }
                 
-                // Restore inventory
-                if (savedData.inventory && savedData.inventory.length > 0) {
+                // Restore inventory - direct restore since we now save the complete grid
+                if (savedData.inventory && Array.isArray(savedData.inventory)) {
                     setInventory(savedData.inventory);
                 }
                 
@@ -377,7 +377,9 @@ function App() {
             setHero(prev => ({ ...prev, gold: prev.gold + sellValue }));
             removeItem(slotIndex, 1);
             addLog(`Vendeu ${itemData.name} por ${sellValue} ouro.`, 'loot');
+            return true; // Sale successful
         }
+        return false; // Item not found
     };
 
     const [tooltip, setTooltip] = useState(null);
