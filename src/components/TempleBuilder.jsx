@@ -153,14 +153,6 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         setHoveredCell(null);
     };
 
-    const selectedRoomType = selectedPoolIndex !== null ? roomPool[selectedPoolIndex] : null;
-    const selectedRoomData = selectedRoomType ? getRoomType(selectedRoomType) : null;
-
-    // Preview de adjacência
-    const preview = hoveredCell && selectedPoolIndex !== null && templeGrid[hoveredCell.row][hoveredCell.col].roomType === 'empty'
-        ? getHoverPreview(hoveredCell.row, hoveredCell.col)
-        : null;
-
     return (
         <>
             {/* Incursion Combat Overlay */}
@@ -196,18 +188,11 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                                 Templo de Atzoatl
                             </h1>
                             <p className="text-xs text-[#666] uppercase tracking-widest mt-1">
-                                Construa sua masmorra • Fase de Planejamento
+                                Explore a masmorra gerada • Encontre o Chefe
                             </p>
                         </div>
                         
                         <div className="flex items-center gap-6">
-                            <div className="text-right">
-                                <div className="text-[10px] text-[#666] uppercase tracking-widest">Incursões Restantes</div>
-                                <div className="text-3xl font-bold text-[#c5a059] font-mono">
-                                    {incursionsRemaining}
-                                </div>
-                            </div>
-                            
                             <button
                                 onClick={() => setShowInfo(!showInfo)}
                                 className="px-4 py-2 bg-[#1a1a1a] border border-[#333] hover:border-[#c5a059] text-[#888] hover:text-[#c5a059] transition-all text-xs uppercase tracking-widest flex items-center gap-2"
@@ -255,13 +240,12 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                     <div className="flex-1 overflow-auto custom-scrollbar bg-[#050505] flex items-center justify-center">
                         <TempleGrid
                             grid={templeGrid}
-                            selectedPoolIndex={selectedPoolIndex}
-                            roomPool={roomPool}
+                            playerPosition={playerPosition}
+                            templeCompleted={templeCompleted}
                             hoveredCell={hoveredCell}
                             onCellClick={handleCellClick}
                             onCellHover={handleCellHover}
                             onCellLeave={handleCellLeave}
-                            getHoverPreview={getHoverPreview}
                             GRID_SIZE={GRID_SIZE}
                         />
                     </div>
