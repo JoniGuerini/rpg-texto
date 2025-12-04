@@ -92,16 +92,19 @@ npm run dev
 
 ## 🚀 Deploy
 
-O projeto está configurado para deploy automático no GitHub Pages via GitHub Actions.
+O projeto usa deploy manual para GitHub Pages (sem GitHub Actions).
 
-### Deploy Automático:
-1. Faça commit das suas alterações
-2. Execute `git push`
-3. GitHub Actions fará o build e deploy automaticamente
+### Deploy Manual:
+1. Execute o script `deploy-manual.bat` (Windows)
+2. Aguarde o build completar (~1 minuto)
+3. O script fará push automático para a branch `gh-pages`
 4. Acesse: https://joniguerini.github.io/rpg-texto/
 
-### Deploy Manual (Windows):
-Execute o script `deploy.bat` na raiz do projeto.
+**Primeira vez?** Configure o GitHub Pages:
+- Vá em **Settings > Pages**
+- **Source:** Deploy from a branch
+- **Branch:** `gh-pages` / `(root)`
+- Clique em **Save**
 
 ## 🎯 Features Implementadas
 

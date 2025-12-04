@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# GitHub Actions (não usado)
+.github/
+
 # Logs
 *.log
 npm-debug.log*
