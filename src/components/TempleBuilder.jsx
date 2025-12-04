@@ -9,17 +9,13 @@ import IncursionCombat from './IncursionCombat';
 const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAddXP, onHeal }) => {
     const {
         templeGrid,
-        roomPool,
-        incursionsRemaining,
-        selectedPoolIndex,
-        hoveredCell,
+        playerPosition,
         templeCompleted,
-        setSelectedPoolIndex,
-        setHoveredCell,
-        placeRoom,
-        getHoverPreview,
+        floor,
+        moveToRoom,
+        completeCurrentRoom,
+        nextFloor,
         resetTemple,
-        completeRoom,
         GRID_SIZE
     } = useTemple();
 
@@ -35,19 +31,16 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
         skipIncursion
     } = useIncursion();
 
-    const [showInfo, setShowInfo] = useState(false);
     const [showDeathScreen, setShowDeathScreen] = useState(false);
 
     const handleCellClick = (row, col) => {
-        const cell = templeGrid[row][col];
+        // Tenta mover para a sala
+        const startedCombat = moveToRoom(row, col);
         
-        // Se tem sala selecionada do pool, tenta colocar
-        if (selectedPoolIndex !== null && cell.roomType === 'empty') {
-            placeRoom(row, col, roomPool[selectedPoolIndex]);
-        } 
-        // Se clicou em sala já colocada (não completada e não vazia), inicia incursão
-        else if (cell.roomType !== 'empty' && !cell.isEntrance && !cell.completed) {
-            startIncursion(cell.roomType, cell.level, row, col);
+        if (startedCombat) {
+            const cell = templeGrid[row][col];
+            // Inicia combate imediatamente
+            startIncursion(cell.roomType, cell.level || 1, row, col);
         }
     };
 
@@ -234,22 +227,22 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                                 <div className="text-[#c5a059] font-bold mb-1 flex items-center gap-2">
                                     <Zap size={14} /> Como Jogar
                                 </div>
-                                <p className="text-xs">1. Selecione uma sala do pool abaixo</p>
-                                <p className="text-xs">2. Clique em um slot vazio no grid</p>
-                                <p className="text-xs">3. Observe os efeitos de adjacência</p>
-                                <p className="text-xs mt-2 text-red-400">4. Clique em salas colocadas para explorar!</p>
+                                <p className="text-xs">1. Clique em um slot para mover (adjacente)</p>
+                                <p className="text-xs">2. Enfrente o desafio da sala</p>
+                                <p className="text-xs">3. Avance até o Chefe (Topo)</p>
+                                <p className="text-xs mt-2 text-red-400">Cuidado: Morrer reseta o andar!</p>
                             </div>
                             <div>
-                                <div className="text-[#c5a059] font-bold mb-1">Adjacência</div>
-                                <p>Salas vizinhas podem se fortalecer!</p>
-                                <p>Comandante ⚔️ → Guarnição 🛡️</p>
-                                <p>Gerador ⚡ → Forja 🔥</p>
+                                <div className="text-[#c5a059] font-bold mb-1">Exploração</div>
+                                <p>Você começa na Entrada (Embaixo).</p>
+                                <p>Mova-se para salas adjacentes.</p>
+                                <p>Objetivo: Chegar ao Chefe no topo!</p>
                             </div>
                             <div>
                                 <div className="text-[#c5a059] font-bold mb-1">Níveis</div>
-                                <p>Nível 1: Básico</p>
-                                <p>Nível 2: Melhorado</p>
-                                <p>Nível 3: Máximo poder!</p>
+                                <p>Nível 1: Inimigos fracos</p>
+                                <p>Nível 2: Inimigos veteranos</p>
+                                <p>Nível 3: Elite / Boss</p>
                             </div>
                         </div>
                     </div>
@@ -275,99 +268,74 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
 
                     {/* Sidebar - Room Info */}
                     <div className="w-80 border-l border-[#333] bg-[#0e0e0e] p-4 overflow-auto custom-scrollbar">
-                        {selectedRoomData ? (
-                            <div>
-                                <div className="text-xs text-[#666] uppercase tracking-widest mb-2">Sala Selecionada</div>
-                                <div 
-                                    className="p-4 rounded-lg mb-4"
-                                    style={{ backgroundColor: selectedRoomData.color + '20', borderColor: selectedRoomData.color }}
-                                >
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="text-4xl">{selectedRoomData.icon}</div>
-                                        <div>
-                                            <div className="text-lg font-bold text-white font-['Cinzel']">
-                                                {selectedRoomData.name}
-                                            </div>
-                                            <div className="text-xs text-[#888] uppercase">{selectedRoomData.category}</div>
-                                        </div>
-                                    </div>
-                                    <p className="text-sm text-[#ccc] italic">{selectedRoomData.description}</p>
-                                </div>
+                        {hoveredCell ? (
+                            (() => {
+                                const cell = templeGrid[hoveredCell.row][hoveredCell.col];
+                                const roomData = getRoomType(cell.roomType);
+                                
+                                if (!roomData) return null;
 
-                                {/* Preview de Nível */}
-                                {preview && (
-                                    <div className="bg-[#1a1a1a] border border-[#c5a059] p-3 rounded mb-4">
-                                        <div className="text-xs text-[#c5a059] uppercase tracking-widest mb-2 flex items-center gap-2">
-                                            <Zap size={12} /> Preview
-                                        </div>
-                                        <div className="text-sm text-white">
-                                            Esta sala será <span className="font-bold text-[#c5a059]">Nível {preview.level}</span>
-                                        </div>
-                                        {preview.affected.length > 0 && (
-                                            <div className="mt-2 pt-2 border-t border-[#333]">
-                                                <div className="text-xs text-green-400 mb-1">Salas Afetadas:</div>
-                                                {preview.affected.map((aff, idx) => (
-                                                    <div key={idx} className="text-xs text-[#888]">
-                                                        • {getRoomType(aff.roomType)?.name}: Nv {aff.oldLevel} → {aff.newLevel}
+                                return (
+                                    <div>
+                                        <div className="text-xs text-[#666] uppercase tracking-widest mb-2">Informação da Sala</div>
+                                        <div 
+                                            className="p-4 rounded-lg mb-4"
+                                            style={{ backgroundColor: roomData.color + '20', borderColor: roomData.color }}
+                                        >
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <div className="text-4xl">{roomData.icon}</div>
+                                                <div>
+                                                    <div className="text-lg font-bold text-white font-['Cinzel']">
+                                                        {roomData.name}
                                                     </div>
-                                                ))}
+                                                    <div className="text-xs text-[#888] uppercase">Nível {cell.level || 1}</div>
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                )}
+                                            <p className="text-sm text-[#ccc] italic">{roomData.description}</p>
+                                        </div>
 
-                                {/* Level Effects */}
-                                <div className="space-y-2">
-                                    <div className="text-xs text-[#666] uppercase tracking-widest">Efeitos por Nível</div>
-                                    {[1, 2, 3].map(level => (
-                                        <div key={level} className="bg-[#111] border border-[#222] p-2 rounded">
-                                            <div className="text-xs font-bold text-[#c5a059] mb-1">Nível {level}</div>
+                                        {/* Status */}
+                                        <div className="mb-4">
+                                            <div className={`text-xs font-bold uppercase tracking-widest ${
+                                                cell.completed ? 'text-green-500' : 
+                                                cell.accessible ? 'text-yellow-500' : 
+                                                'text-red-500'
+                                            }`}>
+                                                {cell.completed ? 'COMPLETADA' : 
+                                                 cell.accessible ? 'DISPONÍVEL PARA EXPLORAR' : 
+                                                 cell.revealed ? 'BLOQUEADA (Sem Caminho)' : 'DESCONHECIDA'}
+                                            </div>
+                                        </div>
+
+                                        {/* Level Effects (Current Level) */}
+                                        <div className="bg-[#111] border border-[#222] p-2 rounded">
+                                            <div className="text-xs font-bold text-[#c5a059] mb-1">Desafios (Nível {cell.level || 1})</div>
                                             <div className="text-xs text-[#888]">
-                                                {JSON.stringify(selectedRoomData.levelEffects[level] || {}, null, 2)
+                                                {JSON.stringify(roomData.levelEffects[cell.level || 1] || {}, null, 2)
                                                     .replace(/[{}"]/g, '')
                                                     .replace(/,/g, ' •')
                                                 }
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    </div>
+                                );
+                            })()
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-center text-[#555]">
                                 <Map size={48} className="opacity-20 mb-4" />
-                                <p className="text-sm">Selecione uma sala do pool abaixo</p>
+                                <p className="text-sm">Passe o mouse sobre uma sala para ver detalhes</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Bottom Pool */}
-                <div className="p-4 border-t-2 border-[#c5a059] bg-[#111]">
-                    <div className="text-xs text-[#666] uppercase tracking-widest mb-2">Pool de Salas Disponíveis</div>
-                    <div className="flex gap-2">
-                        {roomPool.map((roomType, index) => {
-                            const roomData = getRoomType(roomType);
-                            const isSelected = selectedPoolIndex === index;
-
-                            return (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedPoolIndex(isSelected ? null : index)}
-                                    className={`
-                                        flex-1 p-4 rounded-lg border-2 transition-all
-                                        ${isSelected 
-                                            ? 'border-[#c5a059] shadow-[0_0_20px_rgba(197,160,89,0.3)] scale-105' 
-                                            : 'border-[#333] hover:border-[#555]'
-                                        }
-                                    `}
-                                    style={{ backgroundColor: roomData?.color + '20' }}
-                                >
-                                    <div className="text-3xl mb-2">{roomData?.icon}</div>
-                                    <div className="text-xs font-bold text-white">{roomData?.name}</div>
-                                    <div className="text-[10px] text-[#666] uppercase">{roomData?.category}</div>
-                                </button>
-                            );
-                        })}
+                {/* Footer (Removido Pool) */}
+                <div className="p-4 border-t-2 border-[#c5a059] bg-[#111] flex justify-between items-center">
+                    <div className="text-xs text-[#666] uppercase tracking-widest">
+                        Andar Atual: <span className="text-[#c5a059] font-bold text-lg ml-2">{floor}</span>
+                    </div>
+                    <div className="text-xs text-[#666] uppercase tracking-widest">
+                        Posição: <span className="text-white font-mono ml-2">{playerPosition.row}, {playerPosition.col}</span>
                     </div>
                 </div>
 

@@ -168,15 +168,34 @@ export const ROOM_TYPES = {
         }
     },
 
-    // Sala vazia (slot não ocupado)
+    // === BOSS ===
+    BOSS: {
+        id: 'boss',
+        name: 'Câmara de Atziri',
+        tier: 3,
+        category: 'boss',
+        description: 'A Rainha Vaal aguarda. Prepare-se para o fim.',
+        icon: '👹',
+        color: '#7f1d1d', // very dark red
+        rewards: ['unique_item', 'rare_currency'],
+        adjacencyBonus: {
+            receivesFrom: [],
+            givesTo: []
+        },
+        levelEffects: {
+            3: { monsters: 'Rainha Atziri', quantity: 1, difficulty: 5, bossDrop: true }
+        }
+    },
+
+    // Sala vazia (slot não ocupado - Buraco/Abismo)
     EMPTY: {
         id: 'empty',
-        name: 'Sala Vazia',
+        name: 'Abismo',
         tier: 0,
         category: 'empty',
-        description: 'Um espaço vazio esperando para ser preenchido.',
-        icon: '⬜',
-        color: '#374151', // gray
+        description: 'Um abismo sem fundo. Não há caminho por aqui.',
+        icon: '🕳️',
+        color: '#000000',
         rewards: [],
         adjacencyBonus: { receivesFrom: [], givesTo: [] },
         levelEffects: {}
@@ -211,6 +230,5 @@ export const ENTRANCE_ROOM = {
 export const getRoomType = (id) => {
     if (!id) return null;
     const upperID = id.toUpperCase();
-    return ROOM_TYPES[upperID] || ROOM_TYPES[id] || null;
+    return ROOM_TYPES[upperID] || ROOM_TYPES[id] || ROOM_TYPES.EMPTY;
 };
-
