@@ -508,7 +508,7 @@ function App() {
 
                 return (
                     <div
-                        className={`fixed z-[9999] min-w-80 max-w-96 bg-[#0c0c0c] border-2 shadow-[0_0_30px_rgba(0,0,0,0.9)] p-4 pointer-events-none animate-in fade-in zoom-in-95 duration-150 ${colors.border}`}
+                        className={`fixed z-[99999] min-w-80 max-w-96 bg-[#0c0c0c] border-2 shadow-[0_0_30px_rgba(0,0,0,0.9)] p-4 pointer-events-none animate-in fade-in zoom-in-95 duration-150 ${colors.border}`}
                         style={{
                             top: tooltip.y,
                             left: tooltip.side === 'left'

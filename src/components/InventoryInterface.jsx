@@ -38,7 +38,7 @@ const ItemSlot = ({ slot, index, source, onDragStart, onDrop, onDragOver, onDrag
                         </span>
                     )}
                     {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-[#0c0c0c] border-2 border-[#333] p-2 z-[100] hidden group-hover:block pointer-events-none shadow-2xl">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-[#0c0c0c] border-2 border-[#333] p-2 z-[100000] hidden group-hover:block pointer-events-none shadow-2xl">
                         <div className={`font-bold text-xs mb-1 font-['Cinzel'] ${item.rarity === 'unique' ? 'text-[#c5a059]' : item.rarity === 'rare' ? 'text-blue-400' : 'text-[#ccc]'}`}>
                             {item.name}
                         </div>
@@ -138,15 +138,18 @@ const InventoryInterface = ({ onClose, inventoryData }) => {
 
     return (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
-            <div className="bg-[#0c0c0c] border-2 border-[#333] shadow-2xl p-1 relative flex gap-1 max-w-[95vw] overflow-auto">
+            <div className="bg-[#0c0c0c] border-2 border-[#333] shadow-2xl p-1 relative flex flex-col gap-1 max-w-[95vw] max-h-[95vh]">
                 
                 {/* Close Button */}
                 <button 
                     onClick={onClose}
-                    className="absolute -top-10 right-0 text-[#666] hover:text-white bg-[#111] border border-[#333] px-3 py-1 uppercase text-xs font-bold transition-colors hover:border-[#c5a059]"
+                    className="absolute top-2 right-2 z-[60] text-[#666] hover:text-white bg-[#111] border border-[#333] px-3 py-1 uppercase text-xs font-bold transition-colors hover:border-[#c5a059] shadow-lg"
                 >
                     Fechar [ESC]
                 </button>
+
+                {/* Main Content */}
+                <div className="flex gap-1 overflow-auto custom-scrollbar">
 
                 {/* Left Panel: Inventory */}
                 <div className="w-72 bg-[#111] border border-[#333] p-4 flex flex-col">
@@ -203,10 +206,11 @@ const InventoryInterface = ({ onClose, inventoryData }) => {
                         Armazenamento Seguro • {stash.filter(i => i).length} / {stash.length} Slots
                     </div>
                 </div>
+                </div>
 
                 {/* Drag Hint */}
-                <div className="absolute -bottom-8 left-0 right-0 text-center">
-                    <div className="inline-block bg-[#111] border border-[#333] px-4 py-1 text-[10px] text-[#666] uppercase tracking-widest">
+                <div className="text-center py-2 border-t border-[#333]">
+                    <div className="inline-block text-[10px] text-[#666] uppercase tracking-widest">
                         <span className="text-[#c5a059]">Arraste</span> itens livremente • <span className="text-emerald-400">Solte</span> onde quiser • <span className="text-blue-400">Troque</span> de posição
                     </div>
                 </div>
