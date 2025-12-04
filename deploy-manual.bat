@@ -1,5 +1,5 @@
 @echo off
-cd /d "C:\Users\jonig\OneDrive\Documentos\rpg-texto-dg"
+cd /d "%~dp0"
 
 echo ============================================
 echo RPG TEXTO DG - DEPLOY MANUAL (SEM ACTIONS)
@@ -32,10 +32,17 @@ git init
 git checkout -b gh-pages
 git add -A
 git commit -m "Deploy: %date% %time%"
+if errorlevel 1 (
+    echo ERRO no commit!
+    cd ..
+    pause
+    exit /b 1
+)
 
 echo.
 echo [6/7] Fazendo push para branch gh-pages...
-git push -f https://github.com/JoniGuerini/rpg-texto.git gh-pages
+git remote add origin https://github.com/JoniGuerini/rpg-texto.git
+git push -f origin gh-pages
 
 echo.
 echo [7/7] Limpando...
