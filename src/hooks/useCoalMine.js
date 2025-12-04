@@ -178,27 +178,38 @@ export const useCoalMine = (hero, setHero) => {
         // Handler para quando usuário volta para a aba
         const handleVisibilityChange = () => {
             if (!document.hidden) {
-                // Usuario voltou para a aba
+                // Usuario voltou para a aba - processa tempo offline
                 setMiningState(prev => {
                     const now = Date.now();
                     const timeElapsed = now - prev.lastUpdateTime;
                     
-                    // Limitar tempo offline para evitar valores absurdos (máximo 4 horas)
-                    const cappedTime = Math.min(timeElapsed, 4 * 60 * 60 * 1000);
+                    // Se passou tempo significativo (mais de 1 segundo)
+                    if (timeElapsed > 1000) {
+                        // Limitar tempo offline para evitar valores absurdos (máximo 4 horas)
+                        const cappedTime = Math.min(timeElapsed, 4 * 60 * 60 * 1000);
+                        
+                        // Processar mineração offline
+                        console.log(`[Coal Mine] Processando ${Math.floor(cappedTime / 1000)}s offline`);
+                        
+                        // Calcular progresso baseado no tempo
+                        if (prev.status === 'ACTIVE' && prev.coal < prev.maxCoal) {
+                            const secondsElapsed = cappedTime / 1000;
+                            const coalMined = prev.rate * secondsElapsed;
+                            const newCoalAmount = Math.min(prev.maxCoal, prev.coal + coalMined);
+                            
+                            console.log(`[Coal Mine] Carvão: ${Math.floor(prev.coal)} -> ${Math.floor(newCoalAmount)}`);
+                            
+                            return {
+                                ...prev,
+                                coal: newCoalAmount,
+                                lastUpdateTime: now
+                            };
+                        }
+                    }
                     
+                    // Apenas atualiza timestamp se não processou nada
                     return { ...prev, lastUpdateTime: now };
                 });
-                
-                // Processar o tempo que passou offline
-                setTimeout(() => {
-                    setMiningState(prev => {
-                        const timeElapsed = Date.now() - prev.lastUpdateTime;
-                        if (timeElapsed > 200) { // Se passou tempo significativo
-                            processMining(timeElapsed);
-                        }
-                        return prev;
-                    });
-                }, 50);
             } else {
                 // Usuario saiu da aba - atualiza timestamp
                 setMiningState(prev => ({ ...prev, lastUpdateTime: Date.now() }));
