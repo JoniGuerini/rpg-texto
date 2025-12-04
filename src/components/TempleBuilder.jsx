@@ -33,6 +33,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
 
     const [showDeathScreen, setShowDeathScreen] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    const [hoveredCell, setHoveredCell] = useState(null);
 
     const handleCellClick = (row, col) => {
         // Tenta mover para a sala
