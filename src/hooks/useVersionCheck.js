@@ -5,8 +5,17 @@ const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos
 
 export const useVersionCheck = () => {
     const [newVersionAvailable, setNewVersionAvailable] = useState(false);
+    const [isReloading, setIsReloading] = useState(false);
 
     useEffect(() => {
+        // Verifica se acabamos de fazer reload intencional
+        const justReloaded = sessionStorage.getItem('app_just_reloaded');
+        if (justReloaded === 'true') {
+            sessionStorage.removeItem('app_just_reloaded');
+            // Não mostrar aviso se acabamos de recarregar intencionalmente
+            return;
+        }
+
         // Salva a versão atual no localStorage na primeira vez
         const storedBuildTime = localStorage.getItem('app_build_time');
         
@@ -22,56 +31,89 @@ export const useVersionCheck = () => {
                     cache: 'no-cache',
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache'
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     }
                 });
                 
                 const html = await response.text();
                 
-                // Verifica se o HTML mudou (indicativo de nova versão)
-                const currentHash = localStorage.getItem('app_html_hash');
-                const newHash = simpleHash(html);
+                // Extrai os nomes dos arquivos JS/CSS do HTML (mais confiável que hash completo)
+                const jsMatches = html.match(/src="[^"]*\/assets\/index-[^"]+\.js"/g);
+                const cssMatches = html.match(/href="[^"]*\/assets\/index-[^"]+\.css"/g);
                 
-                if (currentHash && currentHash !== newHash) {
+                const currentAssets = [...(jsMatches || []), ...(cssMatches || [])].join('|');
+                const storedAssets = localStorage.getItem('app_assets');
+                
+                if (storedAssets && storedAssets !== currentAssets && currentAssets) {
+                    // Nova versão detectada!
                     setNewVersionAvailable(true);
-                } else if (!currentHash) {
-                    localStorage.setItem('app_html_hash', newHash);
+                } else if (!storedAssets && currentAssets) {
+                    // Primeira vez, salva os assets atuais
+                    localStorage.setItem('app_assets', currentAssets);
                 }
             } catch (error) {
                 console.error('Erro ao verificar nova versão:', error);
             }
         };
 
-        // Verifica imediatamente
-        checkForNewVersion();
+        // Aguarda 3 segundos antes da primeira verificação (deixa o app carregar)
+        const initialCheck = setTimeout(checkForNewVersion, 3000);
 
         // Verifica periodicamente
         const interval = setInterval(checkForNewVersion, VERSION_CHECK_INTERVAL);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(initialCheck);
+            clearInterval(interval);
+        };
     }, []);
 
-    const reloadApp = () => {
-        // Limpa o cache e recarrega
-        if ('caches' in window) {
-            caches.keys().then((names) => {
-                names.forEach(name => caches.delete(name));
+    const reloadApp = async () => {
+        try {
+            // Oculta o card imediatamente
+            setIsReloading(true);
+            setNewVersionAvailable(false);
+            
+            // Busca a versão mais recente
+            const response = await fetch(window.location.href, {
+                cache: 'no-cache',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                }
             });
+            
+            const html = await response.text();
+            
+            // Extrai e salva os novos assets ANTES de recarregar
+            const jsMatches = html.match(/src="[^"]*\/assets\/index-[^"]+\.js"/g);
+            const cssMatches = html.match(/href="[^"]*\/assets\/index-[^"]+\.css"/g);
+            const newAssets = [...(jsMatches || []), ...(cssMatches || [])].join('|');
+            
+            if (newAssets) {
+                localStorage.setItem('app_assets', newAssets);
+            }
+            
+            // Marca que fizemos reload intencional
+            sessionStorage.setItem('app_just_reloaded', 'true');
+            
+            // Limpa o cache
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+            
+            // Recarrega com força
+            window.location.reload(true);
+        } catch (error) {
+            console.error('Erro ao recarregar:', error);
+            // Força reload mesmo com erro
+            sessionStorage.setItem('app_just_reloaded', 'true');
+            window.location.reload(true);
         }
-        window.location.reload(true);
     };
 
-    return { newVersionAvailable, reloadApp };
+    return { newVersionAvailable, reloadApp, isReloading };
 };
-
-// Função simples de hash
-function simpleHash(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    return hash.toString(36);
-}
 
