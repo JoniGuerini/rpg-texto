@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Coins, X, ShoppingBag, ArrowRight, Hammer } from 'lucide-react';
+import { Coins, X, ShoppingBag, ArrowRight, Hammer, Plus, Minus } from 'lucide-react';
 
 const RarityColor = {
     common: 'text-[#a8a8a8]',
@@ -12,6 +12,7 @@ const RarityColor = {
 const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, shopData = [], title = "Loja", subtitle = "Mercadorias" }) => {
     const [activeTab, setActiveTab] = useState('buy'); // 'buy' or 'sell'
     const [selectedItem, setSelectedItem] = useState(null);
+    const [sellQuantity, setSellQuantity] = useState(1); // Quantidade para vender
 
     // Filter inventory for sellable items (optional: filter out quest items)
     const sellableItems = inventory.filter(slot => slot.item.value > 0);
@@ -41,11 +42,21 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
     };
 
     const handleSell = () => {
-        if (selectedItem) {
-            onSell(selectedItem);
+        if (selectedItem && sellQuantity > 0) {
+            // Vender múltiplos itens
+            for (let i = 0; i < sellQuantity; i++) {
+                onSell(selectedItem);
+            }
+            // Reset quantidade
+            setSellQuantity(1);
             // Note: useEffect will automatically update count or deselect if item runs out
         }
     };
+
+    // Reset quantity when changing selection or tab
+    useEffect(() => {
+        setSellQuantity(1);
+    }, [selectedItem?.id, activeTab]);
 
     return (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300">
@@ -97,7 +108,7 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                 {/* Tabs */}
                 <div className="flex border-b border-[#333] bg-[#0a0a0a]">
                     <button
-                        onClick={() => { setActiveTab('buy'); setSelectedItem(null); }}
+                        onClick={() => { setActiveTab('buy'); setSelectedItem(null); setSellQuantity(1); }}
                         className={`flex-1 py-4 text-sm font-bold uppercase tracking-widest transition-all ${activeTab === 'buy'
                             ? 'bg-[#1a1a1a] text-[#c5a059] border-b-2 border-[#c5a059]'
                             : 'text-[#666] hover:text-[#ccc] hover:bg-[#111]'}`}
@@ -105,7 +116,7 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                         Comprar
                     </button>
                     <button
-                        onClick={() => { setActiveTab('sell'); setSelectedItem(null); }}
+                        onClick={() => { setActiveTab('sell'); setSelectedItem(null); setSellQuantity(1); }}
                         className={`flex-1 py-4 text-sm font-bold uppercase tracking-widest transition-all ${activeTab === 'sell'
                             ? 'bg-[#1a1a1a] text-[#c5a059] border-b-2 border-[#c5a059]'
                             : 'text-[#666] hover:text-[#ccc] hover:bg-[#111]'}`}
@@ -145,7 +156,10 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                                     sellableItems.map((slot, index) => (
                                         <button
                                             key={index}
-                                            onClick={() => setSelectedItem({ ...slot.item, inventoryIndex: index, count: slot.count })}
+                                            onClick={() => { 
+                                                setSelectedItem({ ...slot.item, inventoryIndex: index, count: slot.count });
+                                                setSellQuantity(1);
+                                            }}
                                             className={`flex items-center gap-4 p-3 border transition-all text-left ${selectedItem?.inventoryIndex === index
                                                 ? 'bg-[#1a1a1a] border-[#c5a059]'
                                                 : 'bg-[#111] border-[#222] hover:border-[#444]'}`}
@@ -216,9 +230,62 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                                             )}
                                         </span>
                                         <div className="text-2xl font-bold font-mono text-[#c5a059] flex items-center gap-2">
-                                            {activeTab === 'buy' ? selectedItem.value : Math.floor(selectedItem.value / 2)} <Coins size={20} />
+                                            {activeTab === 'buy' 
+                                                ? selectedItem.value 
+                                                : Math.floor(selectedItem.value / 2) * (activeTab === 'sell' ? sellQuantity : 1)
+                                            } <Coins size={20} />
                                         </div>
                                     </div>
+
+                                    {/* Quantity Controls (only when selling) */}
+                                    {activeTab === 'sell' && selectedItem.count > 1 && (
+                                        <div className="mb-4 bg-[#111] border border-[#333] p-3">
+                                            <div className="text-[#666] text-xs uppercase tracking-widest mb-2 text-center">
+                                                Quantidade
+                                            </div>
+                                            <div className="flex items-center justify-center gap-2">
+                                                <button
+                                                    onClick={() => setSellQuantity(Math.max(1, sellQuantity - 1))}
+                                                    className="w-10 h-10 bg-[#1a1a1a] border border-[#333] hover:border-[#c5a059] hover:bg-[#222] transition-all flex items-center justify-center"
+                                                    disabled={sellQuantity <= 1}
+                                                >
+                                                    <Minus size={16} className={sellQuantity <= 1 ? 'text-[#444]' : 'text-[#c5a059]'} />
+                                                </button>
+                                                
+                                                <div className="flex-1 text-center">
+                                                    <div className="text-2xl font-bold font-mono text-[#c5a059]">{sellQuantity}</div>
+                                                    <div className="text-[10px] text-[#555] uppercase tracking-widest">
+                                                        de {selectedItem.count}
+                                                    </div>
+                                                </div>
+                                                
+                                                <button
+                                                    onClick={() => setSellQuantity(Math.min(selectedItem.count, sellQuantity + 1))}
+                                                    className="w-10 h-10 bg-[#1a1a1a] border border-[#333] hover:border-[#c5a059] hover:bg-[#222] transition-all flex items-center justify-center"
+                                                    disabled={sellQuantity >= selectedItem.count}
+                                                >
+                                                    <Plus size={16} className={sellQuantity >= selectedItem.count ? 'text-[#444]' : 'text-[#c5a059]'} />
+                                                </button>
+                                            </div>
+                                            
+                                            {/* Quick Select Buttons */}
+                                            <div className="flex gap-1 mt-2">
+                                                <button
+                                                    onClick={() => setSellQuantity(Math.floor(selectedItem.count / 2))}
+                                                    className="flex-1 text-[10px] py-1 bg-[#1a1a1a] border border-[#333] hover:border-[#c5a059] hover:text-[#c5a059] text-[#666] uppercase tracking-widest transition-all"
+                                                    disabled={selectedItem.count < 2}
+                                                >
+                                                    Metade
+                                                </button>
+                                                <button
+                                                    onClick={() => setSellQuantity(selectedItem.count)}
+                                                    className="flex-1 text-[10px] py-1 bg-[#1a1a1a] border border-[#333] hover:border-[#c5a059] hover:text-[#c5a059] text-[#666] uppercase tracking-widest transition-all"
+                                                >
+                                                    Tudo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <button
                                         onClick={activeTab === 'buy' ? handleBuy : handleSell}
@@ -231,7 +298,7 @@ const ShopInterface = ({ onClose, heroGold, inventory, onBuy, onSell, onRepair, 
                                         {activeTab === 'buy' ? (
                                             <>COMPRAR <ArrowRight size={20} /></>
                                         ) : (
-                                            <>VENDER (1x) <Coins size={20} /></>
+                                            <>VENDER {sellQuantity > 1 ? `(${sellQuantity}x)` : ''} <Coins size={20} /></>
                                         )}
                                     </button>
                                     {activeTab === 'buy' && heroGold < selectedItem.value && (
