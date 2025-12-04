@@ -5,8 +5,6 @@ import { ROOM_TYPES, getRoomType } from '../data/templeRooms';
 const generateMonstersForRoom = (roomType, level) => {
     const roomData = getRoomType(roomType);
     
-    console.log('[Monster Gen] Input:', { roomType, level, roomData });
-    
     if (!roomData) {
         console.error('[Monster Gen] Room data not found for:', roomType);
         return [];
@@ -22,8 +20,6 @@ const generateMonstersForRoom = (roomType, level) => {
     const difficulty = typeof effects.difficulty === 'number' ? effects.difficulty : level;
     const monsterName = effects.monsters || `Inimigo Vaal Nv${level}`;
 
-    console.log('[Monster Gen]', { roomType, level, effects, quantity, difficulty, monsterName });
-
     // Base stats por dificuldade
     const baseStats = {
         1: { hp: 80, atk: 8, def: 3, gold: 15, xp: 20 },
@@ -34,8 +30,6 @@ const generateMonstersForRoom = (roomType, level) => {
     };
 
     const stats = baseStats[difficulty] || baseStats[1];
-    
-    console.log('[Monster Gen] Selected stats for difficulty', difficulty, ':', stats);
     
     // Validação para garantir que stats existe e tem valores válidos
     if (!stats || typeof stats.hp !== 'number' || isNaN(stats.hp)) {
@@ -57,11 +51,10 @@ const generateMonstersForRoom = (roomType, level) => {
             maxHp: Number(stats.hp)
         };
         
-        console.log(`[Monster Gen] Creating monster ${i+1}/${quantity}:`, monster);
         monsters.push(monster);
     }
 
-    console.log('[Monster Gen] Final array:', monsters);
+    console.log('[Monster Gen] Generated', monsters.length, 'monsters:', monsters[0]);
 
     return monsters;
 };
@@ -116,7 +109,7 @@ export const useIncursion = () => {
         const roomData = getRoomType(roomType);
         const generatedMonsters = generateMonstersForRoom(roomType, level);
 
-        console.log('[Incursion] Starting:', { roomType, level, roomData, monsters: generatedMonsters });
+        console.log('[Incursion] Starting:', roomData?.name, 'Level', level, '-', generatedMonsters.length, 'monsters');
 
         setCurrentRoom({ roomType, level, row, col, data: roomData });
         setMonsters(generatedMonsters);

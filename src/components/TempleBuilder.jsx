@@ -59,18 +59,22 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
             return;
         }
 
+        // IMPORTANTE: hero.stats.atk, não hero.atk!
+        const heroAtk = hero.stats?.atk || hero.atk || 10;
+        const heroDef = hero.stats?.def || hero.def || 2;
+
         console.log('[Attack] Current monster:', currentMonster);
-        console.log('[Attack] Hero stats:', { atk: hero.atk, def: hero.def });
+        console.log('[Attack] Hero stats:', { atk: heroAtk, def: heroDef });
 
         // Validar valores antes de calcular
-        const monsterDef = currentMonster.def || 0;
-        const monsterAtk = currentMonster.atk || 0;
-        const monsterHp = currentMonster.hp || 0;
-        const monsterGold = currentMonster.gold || 0;
-        const monsterXp = currentMonster.xp || 0;
+        const monsterDef = Number(currentMonster.def) || 0;
+        const monsterAtk = Number(currentMonster.atk) || 0;
+        const monsterHp = Number(currentMonster.hp) || 0;
+        const monsterGold = Number(currentMonster.gold) || 0;
+        const monsterXp = Number(currentMonster.xp) || 0;
 
         // Calcular dano do herói
-        const heroDamage = Math.max(1, hero.atk - monsterDef);
+        const heroDamage = Math.max(1, heroAtk - monsterDef);
         console.log('[Attack] Hero damage:', heroDamage);
         
         // Calcular novo HP do monstro
@@ -89,7 +93,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
             damageMonster(heroDamage);
             
             // Monstro sobrevive e contra-ataca
-            const monsterDamage = Math.max(1, monsterAtk - hero.def);
+            const monsterDamage = Math.max(1, monsterAtk - heroDef);
             console.log('[Attack] Monster counter-attacks for:', monsterDamage);
             onDamageHero(monsterDamage);
         }

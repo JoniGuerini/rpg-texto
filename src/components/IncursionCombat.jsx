@@ -15,13 +15,6 @@ const IncursionCombat = ({
 }) => {
     const roomData = currentRoom?.data || getRoomType(currentRoom?.roomType);
 
-    // Debug - apenas uma vez ao montar
-    useEffect(() => {
-        if (currentMonster) {
-            console.log('[Incursion Combat] Monster loaded:', currentMonster);
-        }
-    }, [currentMonster?.id]); // Apenas quando muda o ID do monstro
-
     // Timer countdown
     useEffect(() => {
         if (!lootCollected && timeRemaining > 0) {
