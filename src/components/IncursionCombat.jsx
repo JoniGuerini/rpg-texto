@@ -15,10 +15,12 @@ const IncursionCombat = ({
 }) => {
     const roomData = currentRoom?.data || getRoomType(currentRoom?.roomType);
 
-    // Debug
+    // Debug - apenas uma vez ao montar
     useEffect(() => {
-        console.log('[Incursion Combat]', { currentRoom, currentMonster, timeRemaining, lootCollected });
-    }, [currentRoom, currentMonster, timeRemaining, lootCollected]);
+        if (currentMonster) {
+            console.log('[Incursion Combat] Monster loaded:', currentMonster);
+        }
+    }, [currentMonster?.id]); // Apenas quando muda o ID do monstro
 
     // Timer countdown
     useEffect(() => {
@@ -84,7 +86,6 @@ const IncursionCombat = ({
 
                         {currentMonster ? (
                             <div className="relative z-10 w-full max-w-2xl">
-                                {console.log('[Combat Render] Monster:', currentMonster)}
                                 {/* Monster Card */}
                                 <div className="bg-[#0a0a0a] border-2 border-[#333] p-6 mb-6">
                                     <div className="flex items-center justify-between mb-4">

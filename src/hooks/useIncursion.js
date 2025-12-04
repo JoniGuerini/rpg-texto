@@ -18,8 +18,8 @@ const generateMonstersForRoom = (roomType, level) => {
     }
 
     const effects = roomData.levelEffects[level];
-    const quantity = effects.quantity || 1;
-    const difficulty = effects.difficulty || level;
+    const quantity = typeof effects.quantity === 'number' ? effects.quantity : 1;
+    const difficulty = typeof effects.difficulty === 'number' ? effects.difficulty : level;
     const monsterName = effects.monsters || `Inimigo Vaal Nv${level}`;
 
     console.log('[Monster Gen]', { roomType, level, effects, quantity, difficulty, monsterName });
@@ -34,18 +34,34 @@ const generateMonstersForRoom = (roomType, level) => {
     };
 
     const stats = baseStats[difficulty] || baseStats[1];
+    
+    console.log('[Monster Gen] Selected stats for difficulty', difficulty, ':', stats);
+    
+    // Validação para garantir que stats existe e tem valores válidos
+    if (!stats || typeof stats.hp !== 'number' || isNaN(stats.hp)) {
+        console.error('[Monster Gen] Invalid stats for difficulty:', difficulty, stats);
+        return [];
+    }
+
     const monsters = [];
 
     for (let i = 0; i < quantity; i++) {
-        monsters.push({
+        const monster = {
             id: `${roomType}_${level}_${i}`,
             name: monsterName,
-            ...stats,
-            maxHp: stats.hp
-        });
+            hp: Number(stats.hp),
+            atk: Number(stats.atk),
+            def: Number(stats.def),
+            gold: Number(stats.gold),
+            xp: Number(stats.xp),
+            maxHp: Number(stats.hp)
+        };
+        
+        console.log(`[Monster Gen] Creating monster ${i+1}/${quantity}:`, monster);
+        monsters.push(monster);
     }
 
-    console.log('[Monster Gen] Generated:', monsters);
+    console.log('[Monster Gen] Final array:', monsters);
 
     return monsters;
 };
