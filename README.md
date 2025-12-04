@@ -2,6 +2,10 @@
 
 Um RPG de texto estilo Diablo, desenvolvido em React com sistema de profissões, crafting e combate estratégico.
 
+## 🎮 [JOGAR AGORA](https://joniguerini.github.io/rpg-texto/)
+
+**Link do jogo:** https://joniguerini.github.io/rpg-texto/
+
 ## 🎮 Características
 
 ### ⚔️ Sistema de Combate
@@ -85,6 +89,19 @@ npm install
 # Inicie o servidor de desenvolvimento
 npm run dev
 ```
+
+## 🚀 Deploy
+
+O projeto está configurado para deploy automático no GitHub Pages via GitHub Actions.
+
+### Deploy Automático:
+1. Faça commit das suas alterações
+2. Execute `git push`
+3. GitHub Actions fará o build e deploy automaticamente
+4. Acesse: https://joniguerini.github.io/rpg-texto/
+
+### Deploy Manual (Windows):
+Execute o script `deploy.bat` na raiz do projeto.
 
 ## 🎯 Features Implementadas
 
