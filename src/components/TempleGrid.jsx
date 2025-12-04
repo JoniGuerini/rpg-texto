@@ -1,5 +1,5 @@
 import React from 'react';
-import { ROOM_TYPES } from '../data/templeRooms';
+import { ROOM_TYPES, getRoomType } from '../data/templeRooms';
 import { Check, ArrowUp, Swords } from 'lucide-react';
 
 const TempleGrid = ({ 
@@ -24,7 +24,7 @@ const TempleGrid = ({
             >
                 {grid.map((row, rowIndex) =>
                     row.map((cell, colIndex) => {
-                        const roomData = ROOM_TYPES[cell.roomType];
+                        const roomData = getRoomType(cell.roomType);
                         const isHovered = hoveredCell?.row === rowIndex && hoveredCell?.col === colIndex;
                         const canPlace = selectedPoolIndex !== null && cell.roomType === 'empty';
                         const preview = isHovered && canPlace ? getHoverPreview(rowIndex, colIndex) : null;
@@ -87,7 +87,7 @@ const TempleGrid = ({
                                 {isHovered && canPlace && selectedPoolIndex !== null && (
                                     <div className="absolute inset-0 bg-[#c5a059]/20 rounded-lg border-2 border-[#c5a059] flex items-center justify-center">
                                         <div className="text-2xl">
-                                            {ROOM_TYPES[roomPool[selectedPoolIndex]]?.icon}
+                                            {getRoomType(roomPool[selectedPoolIndex])?.icon}
                                         </div>
                                     </div>
                                 )}

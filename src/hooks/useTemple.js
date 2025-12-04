@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ROOM_TYPES, AVAILABLE_ROOM_POOL } from '../data/templeRooms';
+import { ROOM_TYPES, AVAILABLE_ROOM_POOL, getRoomType } from '../data/templeRooms';
 
 const GRID_SIZE = 7;
 
@@ -67,7 +67,7 @@ const getNeighbors = (grid, row, col) => {
 // Calcula o nível que uma sala terá baseado em adjacências
 const calculateRoomLevel = (grid, row, col, newRoomType) => {
     const neighbors = getNeighbors(grid, row, col);
-    const roomData = ROOM_TYPES[newRoomType];
+    const roomData = getRoomType(newRoomType);
     
     if (!roomData || !roomData.adjacencyBonus) return 1;
 
@@ -90,7 +90,7 @@ const calculateRoomLevel = (grid, row, col, newRoomType) => {
 // Calcula preview de quais salas serão afetadas
 const getAdjacencyPreview = (grid, row, col, newRoomType) => {
     const neighbors = getNeighbors(grid, row, col);
-    const roomData = ROOM_TYPES[newRoomType];
+    const roomData = getRoomType(newRoomType);
     const affected = [];
 
     if (!roomData || !roomData.adjacencyBonus) return affected;

@@ -1,16 +1,28 @@
 import { useState, useCallback } from 'react';
-import { ROOM_TYPES } from '../data/templeRooms';
+import { ROOM_TYPES, getRoomType } from '../data/templeRooms';
 
 // Gera monstros baseado no tipo e nível da sala
 const generateMonstersForRoom = (roomType, level) => {
-    const roomData = ROOM_TYPES[roomType];
-    if (!roomData || !roomData.levelEffects[level]) {
+    const roomData = getRoomType(roomType);
+    
+    console.log('[Monster Gen] Input:', { roomType, level, roomData });
+    
+    if (!roomData) {
+        console.error('[Monster Gen] Room data not found for:', roomType);
+        return [];
+    }
+    
+    if (!roomData.levelEffects || !roomData.levelEffects[level]) {
+        console.error('[Monster Gen] Level effects not found:', { roomType, level, levelEffects: roomData.levelEffects });
         return [];
     }
 
     const effects = roomData.levelEffects[level];
-    const quantity = effects.quantity || effects.monsters || 1;
+    const quantity = effects.quantity || 1;
     const difficulty = effects.difficulty || level;
+    const monsterName = effects.monsters || `Inimigo Vaal Nv${level}`;
+
+    console.log('[Monster Gen]', { roomType, level, effects, quantity, difficulty, monsterName });
 
     // Base stats por dificuldade
     const baseStats = {
@@ -27,18 +39,20 @@ const generateMonstersForRoom = (roomType, level) => {
     for (let i = 0; i < quantity; i++) {
         monsters.push({
             id: `${roomType}_${level}_${i}`,
-            name: effects.monsters || `Inimigo Vaal Nv${level}`,
+            name: monsterName,
             ...stats,
             maxHp: stats.hp
         });
     }
+
+    console.log('[Monster Gen] Generated:', monsters);
 
     return monsters;
 };
 
 // Gera loot baseado no tipo de sala
 const generateLootForRoom = (roomType, level) => {
-    const roomData = ROOM_TYPES[roomType];
+    const roomData = getRoomType(roomType);
     if (!roomData) return { gold: 0, items: [] };
 
     const baseGold = level * 50;
@@ -83,8 +97,10 @@ export const useIncursion = () => {
 
     // Inicia uma incursão em uma sala específica
     const startIncursion = useCallback((roomType, level, row, col) => {
-        const roomData = ROOM_TYPES[roomType];
+        const roomData = getRoomType(roomType);
         const generatedMonsters = generateMonstersForRoom(roomType, level);
+
+        console.log('[Incursion] Starting:', { roomType, level, roomData, monsters: generatedMonsters });
 
         setCurrentRoom({ roomType, level, row, col, data: roomData });
         setMonsters(generatedMonsters);
@@ -141,15 +157,11 @@ export const useIncursion = () => {
         setLootCollected(null);
     }, []);
 
-    const getCurrentMonster = useCallback(() => {
-        return monsters[currentMonsterIndex] || null;
-    }, [monsters, currentMonsterIndex]);
-
     return {
         incursionActive,
         currentRoom,
         monsters,
-        currentMonster: getCurrentMonster(),
+        currentMonster: monsters[currentMonsterIndex] || null,
         incursionTimeRemaining,
         lootCollected,
         startIncursion,

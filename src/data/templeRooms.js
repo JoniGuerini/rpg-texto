@@ -207,3 +207,10 @@ export const ENTRANCE_ROOM = {
     fixed: true
 };
 
+// Helper para buscar sala (case-insensitive)
+export const getRoomType = (id) => {
+    if (!id) return null;
+    const upperID = id.toUpperCase();
+    return ROOM_TYPES[upperID] || ROOM_TYPES[id] || null;
+};
+

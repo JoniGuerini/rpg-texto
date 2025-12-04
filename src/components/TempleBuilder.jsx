@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Info, Zap, Map } from 'lucide-react';
 import { useTemple } from '../hooks/useTemple';
 import { useIncursion } from '../hooks/useIncursion';
-import { ROOM_TYPES } from '../data/templeRooms';
+import { ROOM_TYPES, getRoomType } from '../data/templeRooms';
 import TempleGrid from './TempleGrid';
 import IncursionCombat from './IncursionCombat';
 
@@ -107,7 +107,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
     };
 
     const selectedRoomType = selectedPoolIndex !== null ? roomPool[selectedPoolIndex] : null;
-    const selectedRoomData = selectedRoomType ? ROOM_TYPES[selectedRoomType] : null;
+    const selectedRoomData = selectedRoomType ? getRoomType(selectedRoomType) : null;
 
     // Preview de adjacência
     const preview = hoveredCell && selectedPoolIndex !== null && templeGrid[hoveredCell.row][hoveredCell.col].roomType === 'empty'
@@ -256,7 +256,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                                                 <div className="text-xs text-green-400 mb-1">Salas Afetadas:</div>
                                                 {preview.affected.map((aff, idx) => (
                                                     <div key={idx} className="text-xs text-[#888]">
-                                                        • {ROOM_TYPES[aff.roomType]?.name}: Nv {aff.oldLevel} → {aff.newLevel}
+                                                        • {getRoomType(aff.roomType)?.name}: Nv {aff.oldLevel} → {aff.newLevel}
                                                     </div>
                                                 ))}
                                             </div>
@@ -294,7 +294,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                     <div className="text-xs text-[#666] uppercase tracking-widest mb-2">Pool de Salas Disponíveis</div>
                     <div className="flex gap-2">
                         {roomPool.map((roomType, index) => {
-                            const roomData = ROOM_TYPES[roomType];
+                            const roomData = getRoomType(roomType);
                             const isSelected = selectedPoolIndex === index;
 
                             return (
