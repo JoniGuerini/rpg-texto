@@ -77,8 +77,8 @@ const CharacterSheet = ({ hero, onClose, onUpdateName, onResetGame, hasSave }) =
     const hpRegen = (hero.stats.vig * 0.2).toFixed(1);
 
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-300 p-6">
-            <div className="w-full h-full bg-[#050505] border border-[#333] shadow-2xl flex flex-col relative overflow-hidden">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-300 p-2 md:p-4 lg:p-6">
+            <div className="w-full max-w-7xl h-full bg-[#050505] border border-[#333] shadow-2xl flex flex-col relative overflow-hidden">
 
                 {/* Background Texture */}
                 <div className="absolute inset-0 bg-texture-dark opacity-50 pointer-events-none" />
@@ -98,10 +98,10 @@ const CharacterSheet = ({ hero, onClose, onUpdateName, onResetGame, hasSave }) =
                 </div>
 
                 {/* Content Grid */}
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0 relative z-10 overflow-hidden">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0 relative z-10 overflow-auto">
 
                     {/* Column 1: Profile & Core Stats */}
-                    <div className="p-8 border-r border-[#333] overflow-y-auto custom-scrollbar bg-[#080808] flex flex-col justify-center">
+                    <div className="p-4 md:p-6 lg:p-8 border-r border-[#333] overflow-y-auto custom-scrollbar bg-[#080808] flex flex-col justify-center">
 
                         {/* Portrait */}
                         <div className="flex flex-col items-center mb-8">
@@ -169,7 +169,7 @@ const CharacterSheet = ({ hero, onClose, onUpdateName, onResetGame, hasSave }) =
                     </div>
 
                     {/* Column 2: Combat Stats & Details */}
-                    <div className="p-8 bg-[#080808] overflow-y-auto custom-scrollbar flex flex-col justify-center">
+                    <div className="p-4 md:p-6 lg:p-8 bg-[#080808] overflow-y-auto custom-scrollbar flex flex-col justify-center">
                         <h4 className="text-xs font-bold text-[#444] uppercase mb-4 tracking-widest border-b border-[#222] pb-1">Estatísticas de Combate</h4>
 
                         <div className="grid grid-cols-2 gap-4 mb-6">

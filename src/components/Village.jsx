@@ -194,13 +194,13 @@ const Village = ({ onNavigate, hero, onHeal, onDeductGold, onBuyItem, onSellItem
     };
 
     return (
-        <div className="relative w-full h-full bg-[#050505] overflow-hidden flex flex-col animate-in fade-in duration-500">
+        <div className="relative w-full h-full bg-[#050505] overflow-auto flex flex-col animate-in fade-in duration-500">
             {/* Background Atmosphere */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-20 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 pointer-events-none" />
 
             {/* Header */}
-            <div className="relative z-10 p-8 text-center border-b border-[#333] bg-[#0a0a0a]/80 backdrop-blur-md flex items-center justify-center gap-4">
+            <div className="relative z-10 p-4 md:p-6 lg:p-8 text-center border-b border-[#333] bg-[#0a0a0a]/80 backdrop-blur-md flex flex-col md:flex-row items-center justify-center gap-4">
                 {activeBuilding && (
                     <button
                         onClick={handleLeaveBuilding}
@@ -211,7 +211,7 @@ const Village = ({ onNavigate, hero, onHeal, onDeductGold, onBuyItem, onSellItem
                     </button>
                 )}
                 <div>
-                    <h1 className="text-4xl font-bold font-['Cinzel'] text-gold-gradient tracking-[0.2em] drop-shadow-lg">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold font-['Cinzel'] text-gold-gradient tracking-[0.2em] drop-shadow-lg">
                         {activeBuilding ? activeBuilding.name : 'Vila de Tristram'}
                     </h1>
                     <p className="text-[#666] font-serif italic mt-2">
@@ -221,19 +221,19 @@ const Village = ({ onNavigate, hero, onHeal, onDeductGold, onBuyItem, onSellItem
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 relative z-10 flex items-center justify-center gap-12 p-12">
+            <div className="flex-1 relative z-10 flex items-center justify-center gap-4 md:gap-8 lg:gap-12 p-4 md:p-8 lg:p-12">
 
                 {!activeBuilding ? (
                     // Village Square View (Buildings & Fountain)
                     // Village Square View (Buildings)
-                    <div className="flex items-center justify-center gap-12">
+                    <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 lg:gap-12">
                         {BUILDINGS.map((building) => (
                             <button
                                 key={building.id}
                                 onClick={() => handleEnterBuilding(building)}
                                 className="group flex flex-col items-center gap-4 transition-transform hover:scale-105"
                             >
-                                <div className={`w-64 h-64 rounded-lg border-2 border-[#333] bg-[#111] flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.5)] ${building.borderColor} ${building.shadowColor} transition-all relative overflow-hidden`}>
+                                <div className={`w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 rounded-lg border-2 border-[#333] bg-[#111] flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.5)] ${building.borderColor} ${building.shadowColor} transition-all relative overflow-hidden`}>
                                     <div className={`absolute inset-0 ${building.bgHover} transition-colors pointer-events-none z-10`} />
                                     {building.image ? (
                                         <>

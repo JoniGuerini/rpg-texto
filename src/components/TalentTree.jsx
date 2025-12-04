@@ -255,7 +255,7 @@ const TalentTree = ({ talentData, hero, onUnlock, onClose }) => {
     return (
         <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-sm z-50 flex flex-col animate-in fade-in zoom-in-95 duration-300">
             {/* Header */}
-            <div className="p-6 border-b-2 border-[#c5a059] bg-ornate-pattern flex justify-between items-center shadow-lg relative z-10">
+            <div className="p-3 md:p-4 lg:p-6 border-b-2 border-[#c5a059] bg-ornate-pattern flex flex-col md:flex-row justify-between items-center shadow-lg relative z-10 gap-3 md:gap-0">
                 <div>
                     <h2 className="text-3xl font-bold text-gold-gradient font-['Cinzel'] tracking-[0.2em] drop-shadow-md">Árvore de Talentos</h2>
                     <p className="text-xs text-[#666] uppercase tracking-widest mt-1">Molde o destino do seu herói</p>
@@ -276,7 +276,7 @@ const TalentTree = ({ talentData, hero, onUnlock, onClose }) => {
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex justify-center gap-12 py-6 border-b border-[#222] bg-[#080808] relative z-10">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-8 lg:gap-12 py-3 md:py-4 lg:py-6 border-b border-[#222] bg-[#080808] relative z-10">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
@@ -297,7 +297,7 @@ const TalentTree = ({ talentData, hero, onUnlock, onClose }) => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-hidden p-6 relative flex flex-col items-center gap-4">
+            <div className="flex-1 overflow-auto p-2 md:p-4 lg:p-6 relative flex flex-col items-center gap-4">
                 {/* Background Texture */}
                 <div className="absolute inset-0 bg-texture-dark opacity-50 pointer-events-none" />
 
