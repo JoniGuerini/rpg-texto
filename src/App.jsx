@@ -115,7 +115,8 @@ function App() {
             coal: coalMine.miningState.coal,
             maxCoal: coalMine.miningState.maxCoal,
             rate: coalMine.miningState.rate,
-            upgrades: coalMine.miningState.upgrades
+            upgrades: coalMine.miningState.upgrades,
+            lastUpdateTime: coalMine.miningState.lastUpdateTime
         }
     }), [hero, activeView, floor, corridor, logs, questState, inventory, coalMine.miningState]);
 
@@ -141,12 +142,24 @@ function App() {
                 if (savedData.inventory && Array.isArray(savedData.inventory)) {
                     setInventory(savedData.inventory);
                 }
+
+                // Restore coal mine - atualiza timestamp para processar tempo offline
+                if (savedData.coalMine) {
+                    coalMine.setMiningState(prev => ({
+                        ...prev,
+                        coal: savedData.coalMine.coal || 0,
+                        maxCoal: savedData.coalMine.maxCoal || 100,
+                        rate: savedData.coalMine.rate || 1.0,
+                        upgrades: savedData.coalMine.upgrades || prev.upgrades,
+                        lastUpdateTime: savedData.coalMine.lastUpdateTime || Date.now()
+                    }));
+                }
                 
                 addLog("Progresso carregado com sucesso!", 'info');
             }
             setSaveLoaded(true);
         }
-    }, [saveLoaded, loadGame, logs, addLog, setQuestState, setInventory]);
+    }, [saveLoaded, loadGame, logs, addLog, setQuestState, setInventory, coalMine]);
 
     // Reset game function
     const handleResetGame = () => {

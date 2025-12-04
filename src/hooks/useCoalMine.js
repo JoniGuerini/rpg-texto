@@ -51,7 +51,8 @@ export const useCoalMine = (hero, setHero) => {
             pickaxe: 0,
             boots: 0,
             lamp: 0
-        }
+        },
+        lastUpdateTime: Date.now() // Timestamp para calcular tempo offline
     });
 
     // Calculate Rate
@@ -76,7 +77,7 @@ export const useCoalMine = (hero, setHero) => {
             const cost = 10;
             if (hero.gold >= cost) {
                 setHero(prev => ({ ...prev, gold: prev.gold - cost }));
-                setMiningState(prev => ({ ...prev, status: 'ACTIVE', statusMessage: '' }));
+                setMiningState(prev => ({ ...prev, status: 'ACTIVE', statusMessage: '', lastUpdateTime: Date.now() }));
                 return true;
             }
         } else if (type === 'BLOCKED') {
@@ -84,43 +85,54 @@ export const useCoalMine = (hero, setHero) => {
             const cost = 50;
             if (hero.gold >= cost) {
                 setHero(prev => ({ ...prev, gold: prev.gold - cost }));
-                setMiningState(prev => ({ ...prev, status: 'ACTIVE', statusMessage: '' }));
+                setMiningState(prev => ({ ...prev, status: 'ACTIVE', statusMessage: '', lastUpdateTime: Date.now() }));
                 return true;
             }
         }
         return false;
     };
 
-    // Main Loop
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setMiningState(prev => {
-                // 1. Check Status
-                if (prev.status !== 'ACTIVE') return prev;
+    // Função para processar mineração baseado em tempo decorrido
+    const processMining = useCallback((timeElapsedMs) => {
+        setMiningState(prev => {
+            // 1. Check Status
+            if (prev.status !== 'ACTIVE') {
+                return { ...prev, lastUpdateTime: Date.now() };
+            }
 
-                // 2. Check Capacity
-                if (prev.coal >= prev.maxCoal) return prev;
+            // 2. Check Capacity
+            if (prev.coal >= prev.maxCoal) {
+                return { ...prev, lastUpdateTime: Date.now() };
+            }
 
-                // 3. Roll for Risk (Random Event)
-                // Base risk + depth risk
-                const riskChance = 0.002 + (prev.upgrades.pickaxe * 0.0005); 
-                if (Math.random() < riskChance) {
-                    const isCollapse = Math.random() > 0.7; // 30% chance of collapse vs fear
-                    return {
-                        ...prev,
-                        status: isCollapse ? 'BLOCKED' : 'SCARED',
-                        statusMessage: isCollapse 
-                            ? "Um túnel desabou! A produção parou." 
-                            : "Thomas ouviu sussurros e se escondeu."
-                    };
-                }
+            // 3. Calcular quanto carvão foi minerado
+            const secondsElapsed = timeElapsedMs / 1000;
+            const coalMined = prev.rate * secondsElapsed;
+            const newCoalAmount = Math.min(prev.maxCoal, prev.coal + coalMined);
 
-                // 4. Roll for Loot (Passive Treasure)
-                const lootChance = prev.upgrades.lamp * UPGRADES.lamp.lootChance;
-                let newStash = prev.stash;
+            // 4. Roll for Risk (proporcional ao tempo)
+            let newStatus = prev.status;
+            let newStatusMessage = prev.statusMessage;
+            const riskChance = (0.002 + (prev.upgrades.pickaxe * 0.0005)) * (timeElapsedMs / 100);
+            
+            if (Math.random() < riskChance) {
+                const isCollapse = Math.random() > 0.7;
+                newStatus = isCollapse ? 'BLOCKED' : 'SCARED';
+                newStatusMessage = isCollapse 
+                    ? "Um túnel desabou! A produção parou." 
+                    : "Thomas ouviu sussurros e se escondeu.";
+            }
+
+            // 5. Roll for Loot (proporcional ao tempo)
+            const lootChance = prev.upgrades.lamp * UPGRADES.lamp.lootChance * (timeElapsedMs / 100);
+            let newStash = prev.stash;
+            
+            if (lootChance > 0) {
+                const expectedLoots = Math.floor(lootChance);
+                const fractionalChance = lootChance - expectedLoots;
+                const totalLoots = expectedLoots + (Math.random() < fractionalChance ? 1 : 0);
                 
-                if (lootChance > 0 && Math.random() < lootChance) {
-                    // Pick item
+                for (let i = 0; i < totalLoots; i++) {
                     const roll = Math.random();
                     let cumulative = 0;
                     let selectedItem = LOOT_TABLE[0];
@@ -133,29 +145,74 @@ export const useCoalMine = (hero, setHero) => {
                         }
                     }
                     
-                    // Add to stash (consolidate stacks)
-                    const existingIdx = newStash.findIndex(i => i.id === selectedItem.id);
+                    const existingIdx = newStash.findIndex(item => item.id === selectedItem.id);
                     if (existingIdx >= 0) {
-                        newStash = [...prev.stash];
+                        newStash = [...newStash];
                         newStash[existingIdx].count++;
                     } else {
-                        newStash = [...prev.stash, { ...selectedItem, count: 1 }];
+                        newStash = [...newStash, { ...selectedItem, count: 1 }];
                     }
                 }
+            }
+            
+            return {
+                ...prev,
+                coal: newCoalAmount,
+                stash: newStash,
+                status: newStatus,
+                statusMessage: newStatusMessage,
+                lastUpdateTime: Date.now()
+            };
+        });
+    }, []);
 
-                // 5. Increment Coal
-                const newAmount = Math.min(prev.maxCoal, prev.coal + (prev.rate / 10));
-                
-                return {
-                    ...prev,
-                    coal: newAmount,
-                    stash: newStash
-                };
-            });
+    // Main Loop + Visibility API
+    useEffect(() => {
+        // Função de update regular (quando aba está ativa)
+        const timer = setInterval(() => {
+            if (!document.hidden) {
+                processMining(100); // 100ms = 0.1s
+            }
         }, 100);
 
-        return () => clearInterval(timer);
-    }, []);
+        // Handler para quando usuário volta para a aba
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                // Usuario voltou para a aba
+                setMiningState(prev => {
+                    const now = Date.now();
+                    const timeElapsed = now - prev.lastUpdateTime;
+                    
+                    // Limitar tempo offline para evitar valores absurdos (máximo 4 horas)
+                    const cappedTime = Math.min(timeElapsed, 4 * 60 * 60 * 1000);
+                    
+                    return { ...prev, lastUpdateTime: now };
+                });
+                
+                // Processar o tempo que passou offline
+                setTimeout(() => {
+                    setMiningState(prev => {
+                        const timeElapsed = Date.now() - prev.lastUpdateTime;
+                        if (timeElapsed > 200) { // Se passou tempo significativo
+                            processMining(timeElapsed);
+                        }
+                        return prev;
+                    });
+                }, 50);
+            } else {
+                // Usuario saiu da aba - atualiza timestamp
+                setMiningState(prev => ({ ...prev, lastUpdateTime: Date.now() }));
+            }
+        };
+
+        // Registra listener
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            clearInterval(timer);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [processMining]);
 
     const buyUpgrade = (upgradeId) => {
         const upgrade = UPGRADES[upgradeId];
@@ -170,7 +227,8 @@ export const useCoalMine = (hero, setHero) => {
                     ...prev,
                     rate: calculateRate(newUpgrades),
                     maxCoal: calculateCapacity(newUpgrades),
-                    upgrades: newUpgrades
+                    upgrades: newUpgrades,
+                    lastUpdateTime: Date.now()
                 };
             });
             return true;
@@ -185,7 +243,7 @@ export const useCoalMine = (hero, setHero) => {
         
         if (coalAmount <= 0 && items.length === 0) return null;
 
-        setMiningState(prev => ({ ...prev, coal: 0, stash: [] }));
+        setMiningState(prev => ({ ...prev, coal: 0, stash: [], lastUpdateTime: Date.now() }));
         
         return {
             coal: coalAmount,
@@ -195,6 +253,7 @@ export const useCoalMine = (hero, setHero) => {
 
     return {
         miningState,
+        setMiningState, // Expõe para permitir restaurar save
         buyUpgrade,
         collectResources,
         resolveStatus,
