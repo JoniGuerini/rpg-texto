@@ -88,6 +88,21 @@ export const PROFESSIONS_DATA = {
         maxLevel: 100,
         description: 'A arte de forjar metais em armas letais e armaduras impenetráveis.',
         recipes: [
+            // --- Processamento de Materiais ---
+            {
+                id: 'smelt_iron',
+                name: 'Fundir Ferro',
+                category: 'Processamento de Materiais',
+                description: 'Purifica minério bruto de ferro em barras utilizáveis.',
+                rarity: 'common',
+                difficulty: 1,
+                reagents: [
+                    { itemId: 'iron_ore', name: 'Minério de Ferro', count: 4 },
+                    { itemId: 'coal', name: 'Carvão', count: 1 }
+                ],
+                result: { itemId: 'iron_ingot', count: 1 }
+            },
+            
             // --- Tier 1: Básico (Ferro) ---
             {
                 id: 'corroded_longsword',

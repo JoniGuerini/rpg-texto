@@ -28,6 +28,24 @@ const ITEMS_CATALOG = [
         stackable: true
     },
     {
+        id: 'iron_ore',
+        name: 'Minério de Ferro',
+        type: 'Material',
+        rarity: 'common',
+        value: 15,
+        description: 'Ferro bruto extraído das profundezas. Precisa ser fundido.',
+        stackable: true
+    },
+    {
+        id: 'iron_ingot',
+        name: 'Barra de Ferro',
+        type: 'Material',
+        rarity: 'uncommon',
+        value: 50,
+        description: 'Ferro purificado e moldado em barra. Essencial para forjar armas e armaduras.',
+        stackable: true
+    },
+    {
         id: 'geode_common',
         name: 'Geodo Bruto',
         type: 'Material',

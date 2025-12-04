@@ -34,9 +34,10 @@ const UPGRADES = {
 };
 
 const LOOT_TABLE = [
-    { id: 'geode_common', name: 'Geodo Bruto', chance: 0.6, type: 'Material' },
-    { id: 'gem_chip', name: 'Lasca de Rubi', chance: 0.3, type: 'Gem' },
-    { id: 'fossil', name: 'Fóssil Antigo', chance: 0.1, type: 'Artifact' }
+    { id: 'iron_ore', name: 'Minério de Ferro', chance: 0.5, type: 'Material' },
+    { id: 'geode_common', name: 'Geodo Bruto', chance: 0.3, type: 'Material' },
+    { id: 'gem_chip', name: 'Lasca de Rubi', chance: 0.15, type: 'Gem' },
+    { id: 'fossil', name: 'Fóssil Antigo', chance: 0.05, type: 'Artifact' }
 ];
 
 export const useCoalMine = (hero, setHero) => {
