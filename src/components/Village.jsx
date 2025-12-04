@@ -194,7 +194,7 @@ const Village = ({ onNavigate, hero, onHeal, onDeductGold, onBuyItem, onSellItem
     };
 
     return (
-        <div className="relative w-full h-full bg-[#050505] overflow-auto flex flex-col animate-in fade-in duration-500">
+        <div className="relative w-full h-full bg-[#050505] overflow-auto custom-scrollbar flex flex-col animate-in fade-in duration-500">
             {/* Background Atmosphere */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-20 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 pointer-events-none" />

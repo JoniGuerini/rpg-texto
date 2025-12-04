@@ -297,7 +297,7 @@ const TalentTree = ({ talentData, hero, onUnlock, onClose }) => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-auto p-2 md:p-4 lg:p-6 relative flex flex-col items-center gap-4">
+            <div className="flex-1 overflow-auto custom-scrollbar p-2 md:p-4 lg:p-6 relative flex flex-col items-center gap-4">
                 {/* Background Texture */}
                 <div className="absolute inset-0 bg-texture-dark opacity-50 pointer-events-none" />
 

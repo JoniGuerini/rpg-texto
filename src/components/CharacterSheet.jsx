@@ -98,7 +98,7 @@ const CharacterSheet = ({ hero, onClose, onUpdateName, onResetGame, hasSave }) =
                 </div>
 
                 {/* Content Grid */}
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0 relative z-10 overflow-auto">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0 relative z-10 overflow-auto custom-scrollbar">
 
                     {/* Column 1: Profile & Core Stats */}
                     <div className="p-4 md:p-6 lg:p-8 border-r border-[#333] overflow-y-auto custom-scrollbar bg-[#080808] flex flex-col justify-center">

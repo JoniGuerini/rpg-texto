@@ -157,7 +157,7 @@ const CenterGrid = ({
     const isCombat = gameState === 'COMBAT';
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-[#050505] relative z-0 overflow-auto px-4 md:px-8 lg:px-12 animate-in fade-in zoom-in-98 duration-500">
+        <div className="flex-1 flex flex-col h-full bg-[#050505] relative z-0 overflow-auto custom-scrollbar px-4 md:px-8 lg:px-12 animate-in fade-in zoom-in-98 duration-500">
 
             {/* Main Container - Stone Border with Vignette */}
             <div className="absolute inset-2 mx-4 border-double-gold bg-texture-dark flex flex-col shadow-[inset_0_0_100px_rgba(0,0,0,1)] z-30">
