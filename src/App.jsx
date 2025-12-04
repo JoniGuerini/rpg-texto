@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import TalentTree from './components/TalentTree';
 import Professions from './components/Professions';
 import Village from './components/Village';
@@ -79,7 +79,7 @@ function App() {
 
     // --- Inventory System ---
     const inventorySystem = useInventory(INITIAL_INVENTORY);
-    const { inventory, addItem, removeItem, hasItem } = inventorySystem;
+    const { inventory, addItem, removeItem, hasItem, setInventory, setStash } = inventorySystem;
     
     // Compatibility Adapter: Components expect a simple array of non-null items
     const inventoryList = inventory.filter(slot => slot !== null);
@@ -92,13 +92,13 @@ function App() {
     // For MVP, let's keep useQuests decoupled or update it.
     // Let's update useQuests to accept 'hasItem' and 'removeItem' callbacks instead of raw state.
     // But for now, let's keep the prop signature and maybe break it slightly until we fix Quests.
-    const { questState, acceptQuest, updateQuestProgress, checkAndClaim } = useQuests(hero, setHero, addLog, inventorySystem.setInventory); 
+    const { questState, setQuestState, acceptQuest, updateQuestProgress, checkAndClaim } = useQuests(hero, setHero, addLog, inventorySystem.setInventory); 
 
     // Initialize Coal Mine (Idle Mechanic)
     const coalMine = useCoalMine(hero, setHero);
 
-    // Save/Load System
-    const gameStateToSave = {
+    // Save/Load System - Memoized to prevent re-creation on every render
+    const gameStateToSave = useMemo(() => ({
         hero,
         activeView,
         floor,
@@ -107,12 +107,12 @@ function App() {
         questState,
         inventory: inventory.filter(slot => slot !== null),
         coalMine: {
-            coal: coalMine.coal,
-            capacity: coalMine.capacity,
-            rate: coalMine.rate,
-            upgrades: coalMine.upgrades
+            coal: coalMine.miningState.coal,
+            maxCoal: coalMine.miningState.maxCoal,
+            rate: coalMine.miningState.rate,
+            upgrades: coalMine.miningState.upgrades
         }
-    };
+    }), [hero, activeView, floor, corridor, logs, questState, inventory, coalMine.miningState]);
 
     const { saveGame, loadGame, deleteSave, hasSave } = useSaveGame(gameStateToSave);
 
@@ -126,11 +126,22 @@ function App() {
                 setFloor(savedData.floor || 1);
                 setCorridor(savedData.corridor || 1);
                 setLogs(savedData.logs || logs);
+                
+                // Restore questState
+                if (savedData.questState) {
+                    setQuestState(savedData.questState);
+                }
+                
+                // Restore inventory
+                if (savedData.inventory && savedData.inventory.length > 0) {
+                    setInventory(savedData.inventory);
+                }
+                
                 addLog("Progresso carregado com sucesso!", 'info');
             }
             setSaveLoaded(true);
         }
-    }, [saveLoaded, loadGame, logs, addLog]);
+    }, [saveLoaded, loadGame, logs, addLog, setQuestState, setInventory]);
 
     // Reset game function
     const handleResetGame = () => {

@@ -90,6 +90,7 @@ export const useQuests = (hero, setHero, addLog, setInventory) => {
 
     return {
         questState,
+        setQuestState,
         acceptQuest,
         updateQuestProgress,
         checkAndClaim // Call this periodically or on UI open

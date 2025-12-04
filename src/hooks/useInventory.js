@@ -187,6 +187,8 @@ export const useInventory = (initialItems = []) => {
         moveToStash,
         takeFromStash,
         hasItem,
+        setInventory,
+        setStash,
         INVENTORY_SLOTS,
         STASH_SLOTS
     };
