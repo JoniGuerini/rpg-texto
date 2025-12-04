@@ -180,14 +180,14 @@ const TalentBranch = ({ branch, unlockedTalents, talentPoints, onUnlock }) => {
                 <div className="h-0.5 w-16 bg-gradient-to-r from-transparent via-[#c5a059] to-transparent mx-auto mt-2 opacity-50" />
             </div>
 
-            <div className="flex flex-col gap-12 relative z-10 w-full items-center">
+            <div className="flex flex-col gap-6 md:gap-10 lg:gap-12 relative z-10 w-full max-w-full items-center">
                 {tierKeys.map((tierNum, index) => {
                     const currentTierTalents = tiers[tierNum];
                     const nextTierNum = tierKeys[index + 1];
                     const nextTierTalents = nextTierNum ? tiers[nextTierNum] : null;
 
                     return (
-                        <div key={tierNum} className="flex justify-center gap-16 w-full relative">
+                        <div key={tierNum} className="flex justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 w-full max-w-full relative">
                             {/* Draw connectors to NEXT tier */}
                             {nextTierTalents && (
                                 <ConnectorLines
@@ -297,7 +297,7 @@ const TalentTree = ({ talentData, hero, onUnlock, onClose }) => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-auto custom-scrollbar p-2 md:p-4 lg:p-6 relative flex flex-col items-center gap-4">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-2 md:p-4 lg:p-6 relative flex flex-col items-center gap-4">
                 {/* Background Texture */}
                 <div className="absolute inset-0 bg-texture-dark opacity-50 pointer-events-none" />
 
