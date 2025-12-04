@@ -487,6 +487,7 @@ function App() {
                         onAddItem={(item, count) => addItem(item, count)}
                         onDamageHero={handleDamageHero}
                         onAddXP={handleAddXP}
+                        onHeal={handleHeal}
                     />
                 ) : activeView === 'TALENTS' ? (
                     <TalentTree

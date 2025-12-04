@@ -21,6 +21,10 @@ const IncursionCombat = ({
     const heroMaxHp = hero.maxHp || 100;
     const heroAtk = hero.stats?.atk || hero.atk || 10;
     const heroDef = hero.stats?.def || hero.def || 2;
+    
+    const hpPercentage = (heroHp / heroMaxHp) * 100;
+    const isLowHp = hpPercentage <= 30;
+    const isDead = heroHp <= 0;
 
     const handleAttackWithLog = () => {
         onAttack();
@@ -49,18 +53,32 @@ const IncursionCombat = ({
                     </div>
 
                     {/* Hero HP Display */}
-                    <div className="text-center bg-[#0a0a0a] border-2 border-[#333] px-6 py-3 rounded-lg">
-                        <div className="text-xs text-[#666] uppercase tracking-widest mb-2">Sua Vida</div>
-                        <div className="flex items-center gap-2">
-                            <Heart className="text-red-500" size={20} />
-                            <div className="text-2xl font-bold font-mono text-green-400">
-                                {heroHp} / {heroMaxHp}
+                    <div className={`text-center px-6 py-3 rounded-lg border-2 transition-all ${
+                        isDead ? 'bg-red-950 border-red-900 animate-pulse' :
+                        isLowHp ? 'bg-red-950/50 border-red-700' :
+                        'bg-[#0a0a0a] border-[#333]'
+                    }`}>
+                        <div className="text-xs text-[#666] uppercase tracking-widest mb-2">
+                            {isDead ? '💀 MORTO' : isLowHp ? '⚠️ HP CRÍTICO' : 'Sua Vida'}
+                        </div>
+                        <div className="flex items-center gap-2 justify-center">
+                            <Heart className={isDead ? 'text-red-900' : isLowHp ? 'text-red-500 animate-pulse' : 'text-red-500'} size={20} />
+                            <div className={`text-2xl font-bold font-mono ${
+                                isDead ? 'text-red-900' :
+                                isLowHp ? 'text-red-400 animate-pulse' :
+                                'text-green-400'
+                            }`}>
+                                {Math.max(0, heroHp)} / {heroMaxHp}
                             </div>
                         </div>
                         <div className="w-32 h-2 bg-[#222] border border-[#333] overflow-hidden mt-2">
                             <div 
-                                className="h-full bg-gradient-to-r from-green-900 to-green-500 transition-all duration-300"
-                                style={{ width: `${(heroHp / heroMaxHp) * 100}%` }}
+                                className={`h-full transition-all duration-300 ${
+                                    isDead ? 'bg-gradient-to-r from-red-950 to-red-900' :
+                                    isLowHp ? 'bg-gradient-to-r from-red-900 to-red-500' :
+                                    'bg-gradient-to-r from-green-900 to-green-500'
+                                }`}
+                                style={{ width: `${Math.max(0, hpPercentage)}%` }}
                             />
                         </div>
                     </div>
@@ -124,10 +142,15 @@ const IncursionCombat = ({
                                 {/* Combat Button */}
                                 <button
                                     onClick={handleAttackWithLog}
-                                    className="w-full py-6 bg-red-900 hover:bg-red-800 border-2 border-red-700 text-white font-bold text-xl uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] hover:scale-105 flex items-center justify-center gap-3 active:scale-95"
+                                    disabled={isDead}
+                                    className={`w-full py-6 border-2 font-bold text-xl uppercase tracking-widest transition-all flex items-center justify-center gap-3 ${
+                                        isDead 
+                                            ? 'bg-[#222] border-[#333] text-[#555] cursor-not-allowed'
+                                            : 'bg-red-900 hover:bg-red-800 border-red-700 text-white shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] hover:scale-105 active:scale-95'
+                                    }`}
                                 >
                                     <Swords size={28} />
-                                    ATACAR (Seu Turno)
+                                    {isDead ? 'VOCÊ MORREU' : 'ATACAR (Seu Turno)'}
                                 </button>
 
                                 {/* Hero Stats Display */}

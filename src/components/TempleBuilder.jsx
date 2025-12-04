@@ -6,7 +6,7 @@ import { ROOM_TYPES, getRoomType } from '../data/templeRooms';
 import TempleGrid from './TempleGrid';
 import IncursionCombat from './IncursionCombat';
 
-const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAddXP }) => {
+const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAddXP, onHeal }) => {
     const {
         templeGrid,
         roomPool,
@@ -36,6 +36,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
     } = useIncursion();
 
     const [showInfo, setShowInfo] = useState(false);
+    const [showDeathScreen, setShowDeathScreen] = useState(false);
 
     const handleCellClick = (row, col) => {
         const cell = templeGrid[row][col];
@@ -93,12 +94,33 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
             // === FASE 2: MONSTRO CONTRA-ATACA ===
             const monsterDamage = Math.max(1, monsterAtk - heroDef);
             console.log('[Monster Counter-Attack] Dano causado:', monsterDamage);
-            console.log('[Hero] HP antes:', hero.hp, '- Dano:', monsterDamage, '= HP depois:', hero.hp - monsterDamage);
+            
+            const newHeroHp = hero.hp - monsterDamage;
+            console.log('[Hero] HP antes:', hero.hp, '- Dano:', monsterDamage, '= HP depois:', newHeroHp);
             
             onDamageHero(monsterDamage);
+
+            // === VERIFICAR MORTE DO HERÓI ===
+            if (newHeroHp <= 0) {
+                console.log('[Hero] MORREU! Mostrando tela de morte...');
+                // Mostra tela de morte
+                setTimeout(() => {
+                    setShowDeathScreen(true);
+                }, 800);
+            }
         }
         
         console.log('═══════════════════════════════════');
+    };
+
+    // Morte do herói - reseta templo e sai da incursão
+    const handleHeroDeath = () => {
+        setShowDeathScreen(false);
+        skipIncursion();
+        resetTemple();
+        // Restaura HP do herói
+        onHeal(hero.maxHp);
+        console.log('[Death] Templo resetado, herói curado');
     };
 
     // Finaliza incursão com sucesso
@@ -343,8 +365,32 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
                     </div>
                 </div>
 
+                {/* Death Screen */}
+                {showDeathScreen && (
+                    <div className="absolute inset-0 bg-black/95 flex items-center justify-center z-[70] animate-in fade-in duration-500">
+                        <div className="bg-[#0a0a0a] border-2 border-red-900 shadow-[0_0_50px_rgba(220,38,38,0.5)] p-8 max-w-md text-center">
+                            <div className="text-6xl mb-4 animate-pulse">💀</div>
+                            <h2 className="text-3xl font-bold text-red-500 font-['Cinzel'] mb-2">
+                                VOCÊ MORREU
+                            </h2>
+                            <p className="text-[#888] mb-2">
+                                As sombras do Templo consumiram sua alma.
+                            </p>
+                            <p className="text-sm text-red-400 mb-6">
+                                O Templo de Atzoatl foi perdido e deve ser reconstruído.
+                            </p>
+                            <button
+                                onClick={handleHeroDeath}
+                                className="w-full py-4 bg-red-900 hover:bg-red-800 border-2 border-red-700 text-white font-bold uppercase tracking-widest text-sm transition-all"
+                            >
+                                Retornar à Vila
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Completion Message */}
-                {templeCompleted && (
+                {templeCompleted && !showDeathScreen && (
                     <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
                         <div className="bg-[#0a0a0a] border-2 border-[#c5a059] p-8 max-w-md text-center">
                             <div className="text-6xl mb-4">🏛️</div>
