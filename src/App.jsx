@@ -128,7 +128,22 @@ function App() {
         if (!saveLoaded) {
             const savedData = loadGame();
             if (savedData) {
-                setHero(savedData.hero || INITIAL_HERO);
+                // SANITIZAÇÃO DE HEROI
+                let loadedHero = savedData.hero || INITIAL_HERO;
+                
+                // 1. Garante HP válido (se <= 0, cura)
+                if (!loadedHero.hp || loadedHero.hp <= 0 || isNaN(loadedHero.hp)) {
+                    console.log('[Save Fix] HP inválido detectado:', loadedHero.hp, '-> Curando para MaxHP');
+                    loadedHero.hp = loadedHero.maxHp || 100;
+                }
+
+                // 2. Garante Stats (se faltar)
+                if (!loadedHero.stats) {
+                    console.log('[Save Fix] Stats ausentes -> Restaurando padrão');
+                    loadedHero.stats = INITIAL_HERO.stats;
+                }
+
+                setHero(loadedHero);
                 setActiveView(savedData.activeView || 'VILLAGE');
                 setFloor(savedData.floor || 1);
                 setCorridor(savedData.corridor || 1);
@@ -156,7 +171,7 @@ function App() {
                     }));
                 }
                 
-                addLog("Progresso carregado com sucesso!", 'info');
+                addLog("Progresso carregado e verificado!", 'info');
             }
             setSaveLoaded(true);
         }
