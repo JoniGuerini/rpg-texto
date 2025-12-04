@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { X, Info, Zap, Map } from 'lucide-react';
 import { useTemple } from '../hooks/useTemple';
+import { useIncursion } from '../hooks/useIncursion';
 import { ROOM_TYPES } from '../data/templeRooms';
 import TempleGrid from './TempleGrid';
+import IncursionCombat from './IncursionCombat';
 
-const TempleBuilder = ({ onClose }) => {
+const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAddXP }) => {
     const {
         templeGrid,
         roomPool,
@@ -17,15 +19,83 @@ const TempleBuilder = ({ onClose }) => {
         placeRoom,
         getHoverPreview,
         resetTemple,
+        completeRoom,
         GRID_SIZE
     } = useTemple();
+
+    const {
+        incursionActive,
+        currentRoom,
+        currentMonster,
+        lootCollected,
+        incursionTimeRemaining,
+        startIncursion,
+        damageMonster,
+        defeatCurrentMonster,
+        endIncursion,
+        skipIncursion,
+        setIncursionTimeRemaining
+    } = useIncursion();
 
     const [showInfo, setShowInfo] = useState(false);
 
     const handleCellClick = (row, col) => {
-        if (selectedPoolIndex !== null && templeGrid[row][col].roomType === 'empty') {
+        const cell = templeGrid[row][col];
+        
+        // Se tem sala selecionada do pool, tenta colocar
+        if (selectedPoolIndex !== null && cell.roomType === 'empty') {
             placeRoom(row, col, roomPool[selectedPoolIndex]);
+        } 
+        // Se clicou em sala já colocada (não completada e não vazia), inicia incursão
+        else if (cell.roomType !== 'empty' && !cell.isEntrance && !cell.completed) {
+            startIncursion(cell.roomType, cell.level, row, col);
         }
+    };
+
+    // Combate na incursão
+    const handleAttack = () => {
+        if (!currentMonster) return;
+
+        // Calcular dano do herói
+        const heroDamage = Math.max(1, hero.atk - currentMonster.def);
+        
+        // Aplicar dano ao monstro
+        damageMonster(heroDamage);
+
+        // Verificar se matou
+        if (currentMonster.hp - heroDamage <= 0) {
+            // Monstro morreu
+            onAddGold(currentMonster.gold);
+            onAddXP(currentMonster.xp);
+            defeatCurrentMonster();
+        } else {
+            // Monstro sobrevive e contra-ataca
+            const monsterDamage = Math.max(1, currentMonster.atk - hero.def);
+            onDamageHero(monsterDamage);
+        }
+    };
+
+    // Finaliza incursão com sucesso
+    const handleEndIncursion = () => {
+        if (currentRoom && lootCollected) {
+            // Aplica recompensas
+            if (lootCollected.gold > 0) {
+                onAddGold(lootCollected.gold);
+            }
+            lootCollected.items.forEach(item => {
+                onAddItem(item, item.count);
+            });
+
+            // Marca sala como completada
+            completeRoom(currentRoom.row, currentRoom.col);
+        }
+        
+        endIncursion();
+    };
+
+    // Pula incursão sem completar
+    const handleSkipIncursion = () => {
+        skipIncursion();
     };
 
     const handleCellHover = (row, col) => {
@@ -45,8 +115,24 @@ const TempleBuilder = ({ onClose }) => {
         : null;
 
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="w-full max-w-7xl h-[95vh] bg-[#0a0a0a] border-2 border-[#c5a059] shadow-[0_0_50px_rgba(197,160,89,0.3)] flex flex-col relative">
+        <>
+            {/* Incursion Combat Overlay */}
+            {incursionActive && (
+                <IncursionCombat
+                    currentRoom={currentRoom}
+                    currentMonster={currentMonster}
+                    hero={hero}
+                    timeRemaining={incursionTimeRemaining}
+                    lootCollected={lootCollected}
+                    onAttack={handleAttack}
+                    onEndIncursion={handleEndIncursion}
+                    onSkipIncursion={handleSkipIncursion}
+                    setTimeRemaining={setIncursionTimeRemaining}
+                />
+            )}
+
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="w-full max-w-7xl h-[95vh] bg-[#0a0a0a] border-2 border-[#c5a059] shadow-[0_0_50px_rgba(197,160,89,0.3)] flex flex-col relative">
                 
                 {/* Close Button */}
                 <button
@@ -96,9 +182,10 @@ const TempleBuilder = ({ onClose }) => {
                                 <div className="text-[#c5a059] font-bold mb-1 flex items-center gap-2">
                                     <Zap size={14} /> Como Jogar
                                 </div>
-                                <p>1. Selecione uma sala do pool abaixo</p>
-                                <p>2. Clique em um slot vazio no grid</p>
-                                <p>3. Observe os efeitos de adjacência</p>
+                                <p className="text-xs">1. Selecione uma sala do pool abaixo</p>
+                                <p className="text-xs">2. Clique em um slot vazio no grid</p>
+                                <p className="text-xs">3. Observe os efeitos de adjacência</p>
+                                <p className="text-xs mt-2 text-red-400">4. Clique em salas colocadas para explorar!</p>
                             </div>
                             <div>
                                 <div className="text-[#c5a059] font-bold mb-1">Adjacência</div>
@@ -262,6 +349,7 @@ const TempleBuilder = ({ onClose }) => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

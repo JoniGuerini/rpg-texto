@@ -357,6 +357,44 @@ function App() {
         }));
     };
 
+    const handleAddGold = (amount) => {
+        setHero(prev => ({
+            ...prev,
+            gold: prev.gold + amount
+        }));
+    };
+
+    const handleDamageHero = (damage) => {
+        setHero(prev => ({
+            ...prev,
+            hp: Math.max(0, prev.hp - damage)
+        }));
+    };
+
+    const handleAddXP = (xp) => {
+        setHero(prev => {
+            const newXP = prev.xp + xp;
+            const xpNeeded = prev.level * 100;
+            
+            if (newXP >= xpNeeded) {
+                // Level up!
+                addLog(`Você subiu para o nível ${prev.level + 1}!`, 'success');
+                return {
+                    ...prev,
+                    level: prev.level + 1,
+                    xp: newXP - xpNeeded,
+                    maxHp: prev.maxHp + 20,
+                    hp: prev.maxHp + 20,
+                    atk: prev.atk + 2,
+                    def: prev.def + 1,
+                    talentPoints: prev.talentPoints + 1
+                };
+            }
+            
+            return { ...prev, xp: newXP };
+        });
+    };
+
     const handleUpdateName = (newName) => {
         setHero(prev => ({
             ...prev,
@@ -444,6 +482,11 @@ function App() {
                 ) : activeView === 'TEMPLE' ? (
                     <TempleBuilder
                         onClose={handleCloseMenu}
+                        hero={hero}
+                        onAddGold={handleAddGold}
+                        onAddItem={(item, count) => addItem(item, count)}
+                        onDamageHero={handleDamageHero}
+                        onAddXP={handleAddXP}
                     />
                 ) : activeView === 'TALENTS' ? (
                     <TalentTree
