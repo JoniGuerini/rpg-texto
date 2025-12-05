@@ -136,7 +136,7 @@ const TempleBuilder = ({ onClose, hero, onAddGold, onAddItem, onDamageHero, onAd
             });
 
             // Marca sala como completada
-            completeRoom(currentRoom.row, currentRoom.col);
+            completeCurrentRoom();
         }
         
         endIncursion();
